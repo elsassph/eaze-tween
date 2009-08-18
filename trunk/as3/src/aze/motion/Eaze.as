@@ -36,7 +36,7 @@ package aze.motion
 		 */
 		static public function apply(target:Object, parameters:Object, overwrite:Boolean = true):void
 		{
-			new Eaze().init(target, 0, parameters, overwrite);
+			new Eaze(target, 0, parameters, overwrite);
 		}
 		
 		/**
@@ -49,7 +49,7 @@ package aze.motion
 		 */
 		static public function to(target:Object, duration:Number, parameters:Object, overwrite:Boolean = true):Eaze
 		{
-			return new Eaze().init(target, duration, parameters, overwrite);
+			return new Eaze(target, duration, parameters, overwrite);
 		}
 		
 		/**
@@ -62,7 +62,7 @@ package aze.motion
 		 */
 		static public function from(target:Object, duration:Number, parameters:Object, overwrite:Boolean = true):Eaze
 		{
-			return new Eaze().init(target, duration, parameters, overwrite, true);
+			return new Eaze(target, duration, parameters, overwrite, true);
 		}
 
 		static public function killAllTweens():void
@@ -198,7 +198,7 @@ package aze.motion
 		private var _onComplete:Function;
 		private var _onCompleteArgs:Array;
 		
-		public function init(target:Object, duration:Number, parameters:Object, overwrite:Boolean = true, reverse:Boolean = false):Eaze
+		public function Eaze(target:Object, duration:Number, parameters:Object, overwrite:Boolean = true, reverse:Boolean = false)
 		{
 			this.target = target;
 			_ease = defaultEase;
@@ -247,12 +247,6 @@ package aze.motion
 				// add to main tween chain
 				register(this);
 			}
-			return this;
-		}
-		
-		public function reset(duration:Number, parameters:Object, overwrite:Boolean = true, reverse:Boolean = false):Eaze
-		{
-			return init(target, duration, parameters, overwrite, reverse);
 		}
 		
 		public function ease(ref:IEazeEasing):Eaze
