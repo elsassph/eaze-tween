@@ -21,7 +21,7 @@ package aze.motion
 		//--- STATIC ----------------------------------------------------------
 		
 		static public var defaultEase:IEazeEasing = Quadratic.easeOut;
-		//static public var defaultEase:IEazeEasing = Quart.easeIn;
+		
 		static public const specialProperties:Object = { }; // register properties at the end of this file
 		
 		static private const running:Dictionary = new Dictionary(true);
@@ -73,19 +73,14 @@ package aze.motion
 		
 		static public function killTweensOf(target:Object):void
 		{
-			var targetTweens:Vector.<Eaze> = running[target];
-			//var targetTweens:Array = running[target];
-			if (targetTweens)
+			var tween:Eaze = running[target];
+			var prev:Eaze;
+			while (tween)
 			{
-				var len:int = targetTweens.length;
-				for (var i:int = 0; i < len; i++)
-				{
-					var tween:Eaze = targetTweens[i];
-					tween.isDead = true;
-					tween.dispose(false);
-				}
-				delete running[target];
+				tween.dispose(false);
+				if (tween.rnext) { prev = tween; tween = tween.rnext; prev.rnext = null; }
 			}
+			delete running[target];
 		}
 		
 		static private function createTicker():Shape
@@ -184,6 +179,7 @@ package aze.motion
 		
 		private var prev:Eaze;
 		private var next:Eaze;
+		private var rnext:Eaze;
 		private var isDead:Boolean;
 		
 		private var target:Object;
@@ -243,11 +239,12 @@ package aze.motion
 				endTime = startTime + _duration;
 				if (reverse) update(startTime);
 				
-				var targetTweens:Vector.<Eaze> = running[target];
-				if (!targetTweens) running[target] = targetTweens = new Vector.<Eaze>();
-				//var targetTweens:Array = running[target];
-				//if (!targetTweens) running[target] = targetTweens = [];
-				targetTweens.push(this); 
+				// add to target's running tweens chain
+				var tween:Eaze = running[target];
+				if (!tween) running[target] = this;
+				else { this.rnext = tween; running[target] = this; }
+				
+				// add to main tween chain
 				register(this);
 			}
 			return this;
@@ -313,20 +310,22 @@ package aze.motion
 		{
 			if (removeRunningReference)
 			{
-				var targetTweens:Vector.<Eaze> = running[target];
-				//var targetTweens:Array = running[target];
-				if (targetTweens)
+				var targetTweens:Eaze = running[target];
+				if (targetTweens == this) running[target] = this.rnext;
+				else 
 				{
-					var len:int = targetTweens.length;
-					if (len < 2) delete running[target];
-					else
-						for (var i:int = 0; i < len; i++)
-							if (targetTweens[i] == this)
-							{
-								targetTweens.splice(i, 1);
-								break;
-							}
+					var prev:Eaze = targetTweens;
+					targetTweens = targetTweens.next;
+					while (targetTweens) 
+					{
+						if (targetTweens == this)
+						{
+							prev.rnext = this.rnext;
+							break;
+						}
+					}
 				}
+				this.rnext = null;
 			}
 			
 			target = null;
