@@ -64,13 +64,20 @@ package aze.motion
 		{
 			return new Eaze(target, duration, parameters, overwrite, true);
 		}
-
+		
+		/**
+		 * Stop immediately all running tweens
+		 */
 		static public function killAllTweens():void
 		{
 			for (var target:Object in running)
 				killTweensOf(target);
 		}
 		
+		/**
+		 * Stop immediately all tweens associated with target
+		 * @param	target
+		 */
 		static public function killTweensOf(target:Object):void
 		{
 			var tween:Eaze = running[target];
@@ -198,6 +205,14 @@ package aze.motion
 		private var _onComplete:Function;
 		private var _onCompleteArgs:Array;
 		
+		/**
+		 * Creates a tween instance
+		 * @param	target
+		 * @param	duration
+		 * @param	parameters
+		 * @param	overwrite	Remove existing tweens of target
+		 * @param	reverse		Animate "from" provided parameters instead of "to"
+		 */
 		public function Eaze(target:Object, duration:Number, parameters:Object, overwrite:Boolean = true, reverse:Boolean = false)
 		{
 			this.target = target;
@@ -249,12 +264,22 @@ package aze.motion
 			}
 		}
 		
-		public function ease(ref:IEazeEasing):Eaze
+		/**
+		 * Set easing method
+		 * @param	easing
+		 * @return	Tween reference
+		 */
+		public function ease(easing:IEazeEasing):Eaze
 		{
-			_ease = ref;
+			_ease = easing;
 			return this;
 		}
 		
+		/**
+		 * Set tween delay
+		 * @param	value
+		 * @return	Tween reference
+		 */
 		public function delay(value:Number):Eaze
 		{
 			_delay = value < 10 ? value * 1000 : value;
@@ -263,6 +288,12 @@ package aze.motion
 			return this;
 		}
 		
+		/**
+		 * Set callback on tween update
+		 * @param	handler
+		 * @param	...args
+		 * @return	Tween reference
+		 */
 		public function onUpdate(handler:Function, ...args):Eaze
 		{
 			_onUpdate = handler;
@@ -271,6 +302,12 @@ package aze.motion
 			return this;
 		}
 		
+		/**
+		 * Set callback on tween end
+		 * @param	handler
+		 * @param	...args
+		 * @return	Tween reference
+		 */
 		public function onComplete(handler:Function, ...args):Eaze
 		{
 			_onComplete = handler;
@@ -278,6 +315,10 @@ package aze.motion
 			return this;
 		}
 		
+		/**
+		 * Stop tween immediately
+		 * @param	setEndValues	Set final tween values to target
+		 */
 		public function kill(setEndValues:Boolean = false):void
 		{
 			if (isDead) return;
