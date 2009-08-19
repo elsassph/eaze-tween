@@ -14,7 +14,7 @@ package aze.motion
 	
 	/**
 	 * ...
-	 * @author Philippe / http://philippe.elsass.me
+	 * @author Philippe - http://philippe.elsass.me
 	 */
 	final public class Eaze
 	{
@@ -246,7 +246,6 @@ package aze.motion
 			if (!duration) // apply
 			{
 				update(startTime = endTime = 0);
-				if (overwrite) delete running[target];
 			}
 			else // tween
 			{
@@ -364,7 +363,7 @@ package aze.motion
 			{
 				var targetTweens:Eaze = running[target];
 				if (targetTweens == this) running[target] = this.rnext;
-				else 
+				else if (targetTweens)
 				{
 					var prev:Eaze = targetTweens;
 					targetTweens = targetTweens.next;
