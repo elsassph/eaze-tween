@@ -1,12 +1,14 @@
 package  
 {
 	import aze.motion.easing.Elastic;
+	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quart;
 	import aze.motion.Eaze;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.filters.BlurFilter;
 	import flash.geom.ColorTransform;
 	import flash.geom.Point;
 	import net.hires.debug.Stats;
@@ -45,6 +47,10 @@ package
 			
 			addChild(new Stats());
 			addEventListener(Event.ENTER_FRAME, paint);
+			
+			Eaze.from(bmp, 5)
+				.ease(Linear.easeNone)
+				.filter(BlurFilter, { blurX:10, blurY:10, remove:true } );
 		}
 		
 		private function paint(e:Event):void 

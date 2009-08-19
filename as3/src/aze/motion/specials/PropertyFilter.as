@@ -2,6 +2,10 @@ package aze.motion.specials
 {
 	import aze.motion.easing.IEazeEasing;
 	import aze.motion.Eaze;
+	import flash.filters.BlurFilter;
+	import flash.filters.ColorMatrixFilter;
+	import flash.filters.DropShadowFilter;
+	import flash.filters.GlowFilter;
 	
 	/**
 	 * ...
@@ -11,10 +15,14 @@ package aze.motion.specials
 	{
 		static public function register():void
 		{
-			Eaze.specialProperties.blurFilter = FilterBlur;
-			Eaze.specialProperties.glowFilter = FilterGlow;
-			Eaze.specialProperties.dropShadowFilter = FilterDropShadow;
-			//Eaze.specialProperties.colorMatrixFilter = FilterDropShadow;
+			Eaze.specialProperties["blurFilter"] = FilterBlur;
+			Eaze.specialProperties["glowFilter"] = FilterGlow;
+			Eaze.specialProperties["dropShadowFilter"] = FilterDropShadow;
+			//Eaze.specialProperties["colorMatrixFilter "]= FilterDropShadow;
+			Eaze.specialProperties[BlurFilter] = FilterBlur;
+			Eaze.specialProperties[GlowFilter] = FilterGlow;
+			Eaze.specialProperties[DropShadowFilter] = FilterDropShadow;
+			//Eaze.specialProperties[ColorMatrixFilter] = FilterDropShadow;
 		}
 		
 	}
