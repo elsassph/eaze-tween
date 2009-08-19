@@ -12,7 +12,7 @@ package
 	import net.hires.debug.Stats;
 	/**
 	 * ...
-	 * @author Philippe / Proximity BBDO
+	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class Test extends Sprite
 	{

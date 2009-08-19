@@ -5,7 +5,7 @@
 	
 	/**
 	 * ...
-	 * @author Philippe / Proximity BBDO
+	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class WeightCheck extends Sprite
 	{
