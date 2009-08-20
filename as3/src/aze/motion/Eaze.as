@@ -88,10 +88,12 @@ package aze.motion
 			{
 				tween.isDead = true;
 				tween.dispose(false);
-				if (tween.prev) tween.prev.next = tween.next;
-				else if (head == tween) head = tween.next;
+				var next:Eaze = tween.next;
+				if (tween.prev) tween.prev.next = next;
+				else if (head == tween) head = next;
 				tween.prev = tween.next = null;
 				if (tween.rnext) { prev = tween; tween = tween.rnext; prev.rnext = null; }
+				tween = next;
 			}
 			delete running[target];
 		}
