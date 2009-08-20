@@ -83,17 +83,13 @@ package aze.motion
 		static public function killTweensOf(target:Object):void
 		{
 			var tween:Eaze = running[target];
-			var prev:Eaze;
+			var rprev:Eaze;
 			while (tween)
 			{
 				tween.isDead = true;
 				tween.dispose(false);
-				var next:Eaze = tween.next;
-				if (tween.prev) tween.prev.next = next;
-				else if (head == tween) head = next;
-				tween.prev = tween.next = null;
-				if (tween.rnext) { prev = tween; tween = tween.rnext; prev.rnext = null; }
-				tween = next;
+				if (tween.rnext) { rprev = tween; tween = tween.rnext; rprev.rnext = null; }
+				else tween = null;
 			}
 			delete running[target];
 		}
@@ -124,34 +120,39 @@ package aze.motion
 			{
 				if (time >= t.startTime) 
 				{
-					var isComplete:Boolean = time >= t.endTime;
-					var k:Number = isComplete ? 1.0 : (time - t.startTime) / t._duration;
-					var target:Object = t.target;
-					var _ease:IEazeEasing = t._ease;
-					
-					// update
-					var p:EazeProperty = t.properties;
-					while (p)
+					var isComplete:Boolean;
+					if (t.isDead) isComplete = true;
+					else
 					{
-						target[p.name] = p.start + p.delta * _ease.calculate(k);
-						p = p.next;
-					}
-					
-					if (t.slowTween)
-					{
-						if (t.autoVisible) target.visible = target.alpha > 0.0;
-						if (t.specials)
+						isComplete = time >= t.endTime;
+						var k:Number = isComplete ? 1.0 : (time - t.startTime) / t._duration;
+						var target:Object = t.target;
+						var _ease:IEazeEasing = t._ease;
+						
+						// update
+						var p:EazeProperty = t.properties;
+						while (p)
 						{
-							var s:EazeSpecial = t.specials;
-							while (s)
-							{
-								s.update(_ease, k);
-								s = s.next;
-							}
+							target[p.name] = p.start + p.delta * _ease.calculate(k);
+							p = p.next;
 						}
 						
-						if (t._onUpdate != null) 
-							t._onUpdate.apply(null, t._onUpdateArgs);
+						if (t.slowTween)
+						{
+							if (t.autoVisible) target.visible = target.alpha > 0.0;
+							if (t.specials)
+							{
+								var s:EazeSpecial = t.specials;
+								while (s)
+								{
+									s.update(_ease, k);
+									s = s.next;
+								}
+							}
+							
+							if (t._onUpdate != null) 
+								t._onUpdate.apply(null, t._onUpdateArgs);
+						}
 					}
 					
 					if (isComplete) // tween ends
