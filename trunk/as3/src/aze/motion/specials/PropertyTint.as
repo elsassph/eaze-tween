@@ -25,36 +25,27 @@ package aze.motion.specials
 			super(target, value, reverse, next);
 			var disp:DisplayObject = DisplayObject(target);
 			
-			var transformTint:ColorTransform;
+			var tint:ColorTransform;
 			
-			if (value === null)
-			{
-				transformTint = new ColorTransform();
-			}
+			if (value === null) tint = new ColorTransform();
 			else 
 			{
-				var alpha:Number = 1.0;
-				var mix:Number = 0.0;
-				var amix:Number = 1.0;
-				var tint:uint = value;
-				if (tint > 0xffffff)
-				{
-					var aa:int = (tint >> 24) & 0xff;
-					mix = aa / 128.0;
-					if (mix > 1) { amix = 1; mix = (mix - 1) * 128 / 127; }
-					else amix = 1 - mix;
-				}
-				transformTint = new ColorTransform(
-					amix, amix, amix, alpha,
-					mix * ((tint >> 16) & 0xff),
-					mix * ((tint >> 8) & 0xff),
-					mix * (tint & 0xff)
-				);
+				var color:uint = value;
+				var mix:Number = (color > 0xffffff) ? mix = ((color >> 24) & 0xff) / 255.0 : 1.0;
+				
+				tint = new ColorTransform();
+				tint.redMultiplier = 1 - mix;
+				tint.greenMultiplier = 1 - mix;
+				tint.blueMultiplier = 1 - mix;
+				tint.alphaMultiplier = disp.transform.colorTransform.alphaMultiplier;
+				tint.redOffset = mix * ((color >> 16) & 0xff);
+				tint.greenOffset = mix * ((color >> 8) & 0xff);
+				tint.blueOffset = mix * (color & 0xff);
 			}
 			
 			var end:ColorTransform;
-			if (reverse) { start = transformTint; end = disp.transform.colorTransform; }
-			else { start = disp.transform.colorTransform; end = transformTint; }
+			if (reverse) { start = tint; end = disp.transform.colorTransform; }
+			else { start = disp.transform.colorTransform; end = tint; }
 			
 			delta = new ColorTransform(
 				end.redMultiplier - start.redMultiplier,
