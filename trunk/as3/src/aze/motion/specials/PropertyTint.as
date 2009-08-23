@@ -37,7 +37,6 @@ package aze.motion.specials
 				tint.redMultiplier = 1 - mix;
 				tint.greenMultiplier = 1 - mix;
 				tint.blueMultiplier = 1 - mix;
-				tint.alphaMultiplier = disp.transform.colorTransform.alphaMultiplier;
 				tint.redOffset = mix * ((color >> 16) & 0xff);
 				tint.greenOffset = mix * ((color >> 8) & 0xff);
 				tint.blueOffset = mix * (color & 0xff);
@@ -51,7 +50,7 @@ package aze.motion.specials
 				end.redMultiplier - start.redMultiplier,
 				end.greenMultiplier - start.greenMultiplier,
 				end.blueMultiplier - start.blueMultiplier,
-				end.alphaMultiplier - start.alphaMultiplier,
+				0,
 				end.redOffset - start.redOffset,
 				end.greenOffset - start.greenOffset,
 				end.blueOffset - start.blueOffset
@@ -70,7 +69,6 @@ package aze.motion.specials
 			t.redMultiplier = start.redMultiplier + delta.redMultiplier * ke;
 			t.greenMultiplier = start.greenMultiplier + delta.greenMultiplier * ke;
 			t.blueMultiplier = start.blueMultiplier + delta.blueMultiplier * ke;
-			t.alphaMultiplier = start.alphaMultiplier + delta.alphaMultiplier * ke;
 			t.redOffset = start.redOffset + delta.redOffset * ke;
 			t.greenOffset = start.greenOffset + delta.greenOffset * ke;
 			t.blueOffset = start.blueOffset + delta.blueOffset * ke;
