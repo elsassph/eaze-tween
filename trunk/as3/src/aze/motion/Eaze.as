@@ -94,6 +94,7 @@ package aze.motion
 			delete running[target];
 		}
 		
+		/// Setup enterframe event for update
 		static private function createTicker():Shape
 		{
 			var sp:Shape = new Shape();
@@ -101,6 +102,7 @@ package aze.motion
 			return sp;
 		}
 		
+		/// Add tween to chain
 		static private function register(tween:Eaze):void
 		{
 			if (head) head.prev = tween;
@@ -108,11 +110,13 @@ package aze.motion
 			head = tween;
 		}
 		
+		/// Enterframe handler for update
 		static private function tick(e:Event):void 
 		{
 			if (head) updateTweens(getTimer());
 		}
 		
+		/// Main update loop
 		static private function updateTweens(time:int):void 
 		{
 			var t:Eaze = head;
@@ -124,6 +128,8 @@ package aze.motion
 					if (t.isDead) isComplete = true;
 					else
 					{
+						if (t.blank) t.init();
+						
 						isComplete = time >= t.endTime;
 						var k:Number = isComplete ? 1.0 : (time - t.startTime) / t._duration;
 						var target:Object = t.target;
@@ -139,7 +145,7 @@ package aze.motion
 						
 						if (t.slowTween)
 						{
-							if (t.autoVisible) target.visible = target.alpha > 0.0;
+							if (t.autoVisible) target.visible = target.alpha > 0.001;
 							if (t.specials)
 							{
 								var s:EazeSpecial = t.specials;
@@ -195,6 +201,7 @@ package aze.motion
 		
 		private var target:Object;
 		private var reversed:Boolean;
+		private var blank:Boolean;
 		private var _delay:Number;
 		private var _duration:Number;
 		private var _ease:IEazeEasing;
@@ -236,29 +243,37 @@ package aze.motion
 					if (name == "autoAlpha") { name = "alpha"; autoVisible = true; }
 					else if (name in specialProperties)
 					{
-						specials = new specialProperties[name](target, value, reverse, specials);
+						specials = new specialProperties[name](target, value, specials);
 						continue;
 					}
 				}
-				if (reverse) properties = new EazeProperty(name, value, target[name], properties);
-				else properties = new EazeProperty(name, target[name], value, properties);
+				properties = new EazeProperty(name, value, properties);
 			}
 			
-			slowTween = !autoVisible || specials != null;
+			slowTween = autoVisible || specials != null;
 			
 			if (!duration) // apply
 			{
+				init();
 				update(startTime = endTime = 0);
+				// add to main tween chain to be collected on next frame to expose methods like .filter
+				this.target = target;
+				register(this);
 			}
 			else // tween
 			{
 				isDead = false;
+				blank = true;
 				
 				// timing
 				_duration = duration < 10 ? duration * 1000 : duration;
 				startTime = getTimer();
 				endTime = startTime + _duration;
-				if (reverse) update(startTime);
+				if (reverse) 
+				{
+					init();
+					update(startTime);
+				}
 				
 				// add to target's running tweens chain
 				var tween:Eaze = running[target];
@@ -267,6 +282,24 @@ package aze.motion
 				
 				// add to main tween chain
 				register(this);
+			}
+		}
+		
+		/// Read target values for tweening
+		private function init():void
+		{
+			blank = false;
+			var p:EazeProperty = properties;
+			while (p) 
+			{
+				p.init(target, reversed);
+				p = p.next;
+			}
+			var s:EazeSpecial = specials;
+			while (s)
+			{
+				s.init(reversed);
+				s = s.next;
 			}
 		}
 		
@@ -300,10 +333,14 @@ package aze.motion
 		 * @param	parameters
 		 * @return	Tween reference
 		 */
-		public function filter(classRef:*, parameters:Object):Eaze
+		public function filter(classRef:*, parameters:Object, removeWhenDone:Boolean = false):Eaze
 		{
 			if (classRef in specialProperties)
-				specials = new specialProperties[classRef](target, parameters, reversed, specials);
+			{
+				specials = new specialProperties[classRef](target, parameters, specials);
+				if (_delay == 0) specials.init(reversed);
+				slowTween = true;
+			}
 			return this;
 		}
 		
@@ -351,6 +388,7 @@ package aze.motion
 			isDead = true;
 		}
 		
+		/// Update this tween alone
 		private function update(time:Number):void
 		{
 			// make this tween the only tween to update 
@@ -360,6 +398,7 @@ package aze.motion
 			head = prev;
 		}
 		
+		/// Cleanup all references except main chaining
 		private function dispose(removeRunningReference:Boolean):void
 		{
 			if (removeRunningReference)
@@ -369,7 +408,7 @@ package aze.motion
 				else if (targetTweens)
 				{
 					var prev:Eaze = targetTweens;
-					targetTweens = targetTweens.next;
+					targetTweens = targetTweens.rnext;
 					while (targetTweens) 
 					{
 						if (targetTweens == this)
@@ -377,6 +416,8 @@ package aze.motion
 							prev.rnext = this.rnext;
 							break;
 						}
+						prev = targetTweens;
+						targetTweens = targetTweens.rnext;
 					}
 				}
 				this.rnext = null;
@@ -415,15 +456,28 @@ final class EazeProperty
 {
 	public var name:String;
 	public var start:Number;
+	public var end:Number;
 	public var delta:Number;
 	public var next:EazeProperty;
 	
-	function EazeProperty(name:String, start:Number, end:Number, next:EazeProperty)
+	function EazeProperty(name:String, end:Number, next:EazeProperty)
 	{
 		this.name = name;
-		this.start = start;
-		this.delta = end - start;
+		this.end = end;
 		this.next = next;
+	}
+	
+	public function init(target:Object, reversed:Boolean):void
+	{
+		if (reversed)
+		{
+			start = end;
+			end = target[name];
+			target[name] = start;
+		}
+		else start = target[name];
+		
+		this.delta = end - start;
 	}
 	
 	public function dispose():void
@@ -435,5 +489,5 @@ final class EazeProperty
 
 // you can comment out the following lines to disable some plugins
 import aze.motion.specials.PropertyTint; PropertyTint.register();
-import aze.motion.specials.PropertyFrame; PropertyFrame.register();
+//import aze.motion.specials.PropertyFrame; PropertyFrame.register();
 import aze.motion.specials.PropertyFilter; PropertyFilter.register();

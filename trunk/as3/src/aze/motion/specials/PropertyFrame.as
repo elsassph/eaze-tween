@@ -6,6 +6,10 @@ package aze.motion.specials
 	import flash.display.FrameLabel;
 	import flash.display.MovieClip;
 	
+	
+	// DISABLED, do not work
+	
+	
 	/**
 	 * ...
 	 * @author Philippe / http://philippe.elsass.me
@@ -19,10 +23,11 @@ package aze.motion.specials
 		
 		private var start:int;
 		private var delta:int;
+		private var fvalue:Object;
 		
-		public function PropertyFrame(target:Object, value:*, reverse:Boolean, next:EazeSpecial)
+		public function PropertyFrame(target:Object, value:*, next:EazeSpecial)
 		{
-			super(target, value, reverse, next);
+			super(target, value, next);
 		
 			var mc:MovieClip = MovieClip(target);
 			
@@ -47,7 +52,10 @@ package aze.motion.specials
 			{
 				frame = Math.max(1, Math.min(mc.totalFrames, int(value)));
 			}
-			
+		}
+		
+		override public function init(reverse:Boolean):void 
+		{
 			if (reverse) { start = frame; delta = current - start; }
 			else { start = current; delta = current - start; }
 			mc.gotoAndStop(start);

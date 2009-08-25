@@ -18,43 +18,47 @@ package aze.motion.specials
 		}
 		
 		private var start:ColorTransform;
+		private var tvalue:ColorTransform;
 		private var delta:ColorTransform;
 		
-		function PropertyTint(target:Object, value:*, reverse:Boolean, next:EazeSpecial)
+		function PropertyTint(target:Object, value:*, next:EazeSpecial)
 		{
-			super(target, value, reverse, next);
+			super(target, value, next);
 			var disp:DisplayObject = DisplayObject(target);
 			
-			var tint:ColorTransform;
-			
-			if (value === null) tint = new ColorTransform();
+			if (value === null) tvalue = new ColorTransform();
 			else 
 			{
 				var color:uint = value;
 				var mix:Number = (color > 0xffffff) ? mix = ((color >> 24) & 0xff) / 255.0 : 1.0;
 				
-				tint = new ColorTransform();
-				tint.redMultiplier = 1 - mix;
-				tint.greenMultiplier = 1 - mix;
-				tint.blueMultiplier = 1 - mix;
-				tint.redOffset = mix * ((color >> 16) & 0xff);
-				tint.greenOffset = mix * ((color >> 8) & 0xff);
-				tint.blueOffset = mix * (color & 0xff);
+				tvalue = new ColorTransform();
+				tvalue.redMultiplier = 1 - mix;
+				tvalue.greenMultiplier = 1 - mix;
+				tvalue.blueMultiplier = 1 - mix;
+				tvalue.redOffset = mix * ((color >> 16) & 0xff);
+				tvalue.greenOffset = mix * ((color >> 8) & 0xff);
+				tvalue.blueOffset = mix * (color & 0xff);
 			}
+		}
+		
+		override public function init(reverse:Boolean):void 
+		{
+			var disp:DisplayObject = DisplayObject(target);
 			
-			var end:ColorTransform;
-			if (reverse) { start = tint; end = disp.transform.colorTransform; }
-			else { start = disp.transform.colorTransform; end = tint; }
+			if (reverse) { start = tvalue; tvalue = disp.transform.colorTransform; }
+			else { start = disp.transform.colorTransform; }
 			
 			delta = new ColorTransform(
-				end.redMultiplier - start.redMultiplier,
-				end.greenMultiplier - start.greenMultiplier,
-				end.blueMultiplier - start.blueMultiplier,
+				tvalue.redMultiplier - start.redMultiplier,
+				tvalue.greenMultiplier - start.greenMultiplier,
+				tvalue.blueMultiplier - start.blueMultiplier,
 				0,
-				end.redOffset - start.redOffset,
-				end.greenOffset - start.greenOffset,
-				end.blueOffset - start.blueOffset
+				tvalue.redOffset - start.redOffset,
+				tvalue.greenOffset - start.greenOffset,
+				tvalue.blueOffset - start.blueOffset
 			);
+			tvalue = null;
 			
 			if (reverse) update(Linear.easeNone, 1);
 		}
@@ -79,6 +83,7 @@ package aze.motion.specials
 		override public function dispose():void
 		{
 			start = delta = null;
+			tvalue = null;
 		}
 	}
 
