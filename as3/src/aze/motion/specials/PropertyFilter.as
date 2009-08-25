@@ -43,16 +43,18 @@ class FilterBase extends EazeSpecial
 {
 	private var start:Object;
 	private var delta:Object;
+	private var current:BitmapFilter;
+	private var fvalue:BitmapFilter;
 	private var properties:Array;
 	private var removeWhenFinished:Boolean;
 	
-	public function FilterBase(target:Object, value:*, reverse:Boolean, next:EazeSpecial)
+	public function FilterBase(target:Object, value:*, next:EazeSpecial)
 	{
-		super(target, value, reverse, next);
+		super(target, value, next);
 		
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp, true);
-		var filter:BitmapFilter = current.clone();
+		current = getCurrentFilter(disp, true);
+		fvalue = current.clone();
 		
 		properties = [];
 		for (var prop:String in value) 
@@ -61,24 +63,29 @@ class FilterBase extends EazeSpecial
 			else
 			{
 				properties.push(prop);
-				filter[prop] = value[prop];
+				fvalue[prop] = value[prop];
 			}
 		}
-		
+	}
+	
+	override public function init(reverse:Boolean):void 
+	{
+		var disp:DisplayObject = DisplayObject(target);
 		var begin:BitmapFilter;
 		var end:BitmapFilter;
-		if (reverse) { begin = filter; end = current; }
-		else { begin = current.clone(); end = filter; }
-		addFilter(disp, begin); 
+		if (reverse) { begin = fvalue; end = current; }
+		else { begin = current.clone(); end = fvalue; }
+		addFilter(disp, begin);
 		
 		start = { };
 		delta = { };
 		var v:Number;
-		for each(prop in properties) 
+		for each(var prop:String in properties) 
 		{
 			start[prop] = begin[prop];
 			delta[prop] = end[prop] - start[prop];
 		}
+		current = fvalue = null;
 	}
 	
 	private function addFilter(disp:DisplayObject, filter:BitmapFilter):void
@@ -131,21 +138,21 @@ class FilterBase extends EazeSpecial
 	public function get filterClass():Class { return null; }
 }
 
-class FilterColorMatrix extends FilterBase
+/*class FilterColorMatrix extends FilterBase
 {
-	public function FilterColorMatrix(target:Object, value:*, reverse:Boolean, next:EazeSpecial)
+	public function FilterColorMatrix(target:Object, value:*, next:EazeSpecial)
 	{
-		super(target, value, reverse, next);
+		super(target, value, next);
 	}
 	
 	override public function get filterClass():Class { return ColorMatrixFilter; }
-}
+}*/
 
 class FilterBlur extends FilterBase
 {
-	public function FilterBlur(target:Object, value:*, reverse:Boolean, next:EazeSpecial)
+	public function FilterBlur(target:Object, value:*, next:EazeSpecial)
 	{
-		super(target, value, reverse, next);
+		super(target, value, next);
 	}
 	
 	override public function get filterClass():Class { return BlurFilter; }
@@ -153,9 +160,9 @@ class FilterBlur extends FilterBase
 
 class FilterGlow extends FilterBase
 {
-	public function FilterGlow(target:Object, value:*, reverse:Boolean, next:EazeSpecial)
+	public function FilterGlow(target:Object, value:*, next:EazeSpecial)
 	{
-		super(target, value, reverse, next);
+		super(target, value, next);
 	}
 	
 	override public function get filterClass():Class { return GlowFilter; }
@@ -163,9 +170,9 @@ class FilterGlow extends FilterBase
 
 class FilterDropShadow extends FilterBase
 {
-	public function FilterDropShadow(target:Object, value:*, reverse:Boolean, next:EazeSpecial)
+	public function FilterDropShadow(target:Object, value:*, next:EazeSpecial)
 	{
-		super(target, value, reverse, next);
+		super(target, value, next);
 	}
 	
 	override public function get filterClass():Class { return DropShadowFilter; }
