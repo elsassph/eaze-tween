@@ -38,7 +38,7 @@ final class QuartEaseInOut implements IEazeEasing
 {
 	public function calculate(k:Number):Number 
 	{
-		if (k < 0.5) return 0.5 * k * k * k * k;
+		if ((k *= 2) < 1) return 0.5 * k * k * k * k;
 		return -0.5 * ((k -= 2) * k * k * k - 2);
 	}
 }
