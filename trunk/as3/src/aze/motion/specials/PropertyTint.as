@@ -30,12 +30,15 @@ package aze.motion.specials
 			else 
 			{
 				var color:uint = value;
-				var mix:Number = (color > 0xffffff) ? mix = ((color >> 24) & 0xff) / 255.0 : 1.0;
+				var mix:Number = (color > 0xffffff) ? ((color >> 24) & 0xff) / 255.0 : 0.5;
+				var amix:Number;
+				if (mix <= 0.5) { amix = 1 - mix * 2; mix *= 2; }
+				else { amix = 1; mix = Math.min(1, (mix - 0.49) * 2); }
 				
 				tvalue = new ColorTransform();
-				tvalue.redMultiplier = 1 - mix;
-				tvalue.greenMultiplier = 1 - mix;
-				tvalue.blueMultiplier = 1 - mix;
+				tvalue.redMultiplier = amix;
+				tvalue.greenMultiplier = amix;
+				tvalue.blueMultiplier = amix;
 				tvalue.redOffset = mix * ((color >> 16) & 0xff);
 				tvalue.greenOffset = mix * ((color >> 8) & 0xff);
 				tvalue.blueOffset = mix * (color & 0xff);
