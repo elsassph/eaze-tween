@@ -10,8 +10,9 @@ package
 	import flash.geom.ColorTransform;
 	import flash.geom.Point;
 	import net.hires.debug.Stats;
+	
 	/**
-	 * ...
+	 * Performance test
 	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class Test extends Sprite

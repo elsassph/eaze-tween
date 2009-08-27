@@ -1,18 +1,18 @@
 package  
 {
+	import assets.Anim1;
 	import aze.motion.Eaze;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
 	/**
-	 * Partial tint tweening test
+	 * Frame tweening test
 	 * @author Philippe / http://philippe.elsass.me
 	 */
-	public class TestAlphaTint extends Sprite
+	public class TestFrame extends Sprite
 	{
-		private var sp:Sprite;
 		
-		public function TestAlphaTint() 
+		public function TestFrame() 
 		{
 			for (var i:int = 0; i < stage.stageWidth / 100; i++) 
 			{
@@ -25,11 +25,10 @@ package
 		
 		private function createItem(sx:int, sy:int):void
 		{
-			var sp:Sprite = new Sprite();
+			var sp:Sprite = new Anim1();
 			sp.x = sx + 10;
 			sp.y = sy + 10;
-			sp.graphics.beginFill(Math.random() * 0xffffff);
-			sp.graphics.drawRect(0, 0, 80, 80);
+			sp.scaleX = sp.scaleY = 0.6;
 			addChild(sp);
 			
 			sp.addEventListener(MouseEvent.ROLL_OVER, over);
@@ -38,14 +37,20 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { tint:null } );
+			// from frame "squeeze" to frame "done"
+			Eaze.to(e.target, 0.5, { frame:"squeeze>done" } );
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
-			// tint 0x40 (64) / 0x80 (128) -> 50%
-			Eaze.to(e.target, 0.5, { tint:0x40ff00ff });
+			if (e.target.currentFrame == 1)
+				// regular tween
+				Eaze.to(e.target, 0.5, { frame:"firstGrow" } );
+			else 
+				// from frame "start" to frame "start+end"
+				Eaze.to(e.target, 0.5, { frame:"grow+end" });
 		}
+		
 	}
 
 }

@@ -41,29 +41,36 @@ import flash.filters.GlowFilter;
 
 class FilterBase extends EazeSpecial
 {
+	static public var fixedProp:Object = { quality:true, color:true };
+	
+	private var properties:Array;
+	private var fvalue:BitmapFilter;
 	private var start:Object;
 	private var delta:Object;
-	private var current:BitmapFilter;
-	private var fvalue:BitmapFilter;
-	private var properties:Array;
 	private var removeWhenFinished:Boolean;
+	private var isNewFilter:Boolean;
 	
 	public function FilterBase(target:Object, value:*, next:EazeSpecial)
 	{
 		super(target, value, next);
 		
 		var disp:DisplayObject = DisplayObject(target);
-		current = getCurrentFilter(disp, true);
-		fvalue = current.clone();
+		var current:BitmapFilter = getCurrentFilter(disp, false);
 		
 		properties = [];
+		fvalue = current.clone();
 		for (var prop:String in value) 
 		{
-			if (prop == "remove") removeWhenFinished = value.remove;
+			var val:* = value[prop];
+			if (prop == "remove") 
+			{
+				// special: remove filter when tween ends
+				removeWhenFinished = val;
+			}
 			else
 			{
+				fvalue[prop] = val;
 				properties.push(prop);
-				fvalue[prop] = value[prop];
 			}
 		}
 	}
@@ -71,21 +78,49 @@ class FilterBase extends EazeSpecial
 	override public function init(reverse:Boolean):void 
 	{
 		var disp:DisplayObject = DisplayObject(target);
+		var current:BitmapFilter = getCurrentFilter(disp);
+		
 		var begin:BitmapFilter;
 		var end:BitmapFilter;
 		if (reverse) { begin = fvalue; end = current; }
-		else { begin = current.clone(); end = fvalue; }
-		addFilter(disp, begin);
+		else { begin = current; end = fvalue; }
 		
 		start = { };
 		delta = { };
-		var v:Number;
-		for each(var prop:String in properties) 
+		
+		for (var i:int = 0; i < properties.length; i++) 
 		{
+			var prop:String = properties[i];
+			var val:* = fvalue[prop];
+			if (val is Boolean)
+			{
+				// filter options set immediately
+				current[prop] = val;
+				properties[i] = null;
+				continue;
+			}
+			else if (isNewFilter) 
+			{
+				// object did not have the filter, initialize it
+				if (prop in fixedProp) 
+				{
+					// set property and do not tween it
+					current[prop] = val;
+					properties[i] = null;
+					continue;
+				}
+				else 
+				{
+					// set to 0
+					current[prop] = 0;
+				}
+			}
 			start[prop] = begin[prop];
 			delta[prop] = end[prop] - start[prop];
 		}
-		current = fvalue = null;
+		fvalue = null;
+		
+		addFilter(disp, begin);
 	}
 	
 	private function addFilter(disp:DisplayObject, filter:BitmapFilter):void
@@ -95,7 +130,7 @@ class FilterBase extends EazeSpecial
 		disp.filters = filters;
 	}
 	
-	private function getCurrentFilter(disp:DisplayObject, remove:Boolean):BitmapFilter
+	private function getCurrentFilter(disp:DisplayObject, remove:Boolean = true):BitmapFilter
 	{
 		var model:Class = filterClass;
 		if (disp.filters)
@@ -114,17 +149,23 @@ class FilterBase extends EazeSpecial
 					else return filters[index];
 				}
 		}
+		isNewFilter = true;
 		return new model();
 	}
 	
 	override public function update(ease:IEazeEasing, k:Number):void
 	{
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp, true);
+		var current:BitmapFilter = getCurrentFilter(disp);
 		
-		for each(var prop:String in properties) 
-			current[prop] = start[prop] + ease.calculate(k) * delta[prop];
-		
+		for (var i:int = 0; i < properties.length; i++) 
+		{
+			var prop:String = properties[i];
+			if (prop)
+			{
+				current[prop] = start[prop] + ease.calculate(k) * delta[prop];
+			}
+		}
 		if (!removeWhenFinished || k < 1.0) addFilter(disp, current);
 		else disp.filters = disp.filters;
 	}

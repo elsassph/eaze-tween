@@ -23,7 +23,8 @@ package aze.motion.specials
 		
 		private var start:int;
 		private var delta:int;
-		private var fvalue:Object;
+		private var frameStart:*;
+		private var frameEnd:*;
 		
 		public function PropertyFrame(target:Object, value:*, next:EazeSpecial)
 		{
@@ -31,33 +32,44 @@ package aze.motion.specials
 		
 			var mc:MovieClip = MovieClip(target);
 			
-			var current:int = mc.currentFrame;
-			var frame:int;
-			if (value is String) // smart frame label handling
+			var parts:Array;
+			if (value is String) 
 			{
+				// smart frame label handling
 				var label:String = value;
 				if (label.indexOf("+") > 0) 
 				{
-					current = findLabel(mc, label.split("+")[0]);
+					parts = label.split("+");
+					frameStart = parts[0];
+					frameEnd = label;
 				}
 				else if (label.indexOf(">") > 0) 
 				{
-					var parts:Array = label.split(">");
-					current = findLabel(mc, parts[0]);
-					label = parts[1];
+					parts = label.split(">");
+					frameStart = parts[0];
+					frameEnd = parts[1];
 				}
-				frame = findLabel(mc, label);
+				else frameEnd = label;
 			}
-			else // numeric
+			else 
 			{
-				frame = Math.max(1, Math.min(mc.totalFrames, int(value)));
+				// numeric frame index
+				frameEnd = Math.max(1, Math.min(mc.totalFrames, int(value)));
 			}
 		}
 		
 		override public function init(reverse:Boolean):void 
 		{
-			if (reverse) { start = frame; delta = current - start; }
-			else { start = current; delta = current - start; }
+			var mc:MovieClip = MovieClip(target);
+			
+			// convert labels to num
+			if (frameStart is String) frameStart = findLabel(mc, frameStart);
+			else frameStart = mc.currentFrame;
+			if (frameEnd is String) frameEnd = findLabel(mc, frameEnd);
+			
+			if (reverse) { start = frameEnd; delta = frameStart - start; }
+			else { start = frameStart; delta = frameEnd - start; }
+			
 			mc.gotoAndStop(start);
 		}
 		
@@ -65,8 +77,7 @@ package aze.motion.specials
 		{
 			for each(var label:FrameLabel in mc.currentLabels)
 				if (label.name == name) return label.frame;
-				
-			return mc.totalFrames;
+			return 1;
 		}
 		
 		override public function update(ease:IEazeEasing, k:Number):void

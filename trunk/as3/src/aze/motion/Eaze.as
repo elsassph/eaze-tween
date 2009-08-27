@@ -337,8 +337,9 @@ package aze.motion
 		{
 			if (classRef in specialProperties)
 			{
+				if (removeWhenDone) parameters.remove = true;
 				specials = new specialProperties[classRef](target, parameters, specials);
-				if (_delay == 0) specials.init(reversed);
+				if (_delay == 0 || reversed) specials.init(reversed);
 				slowTween = true;
 			}
 			return this;
@@ -489,5 +490,5 @@ final class EazeProperty
 
 // you can comment out the following lines to disable some plugins
 import aze.motion.specials.PropertyTint; PropertyTint.register();
-//import aze.motion.specials.PropertyFrame; PropertyFrame.register();
+import aze.motion.specials.PropertyFrame; PropertyFrame.register();
 import aze.motion.specials.PropertyFilter; PropertyFilter.register();

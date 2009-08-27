@@ -1,18 +1,20 @@
 package  
 {
+	import aze.motion.easing.Quadratic;
 	import aze.motion.Eaze;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
+	import flash.filters.BlurFilter;
+	import flash.filters.GlowFilter;
 	
 	/**
-	 * Partial tint tweening test
+	 * Filters tweening test
 	 * @author Philippe / http://philippe.elsass.me
 	 */
-	public class TestAlphaTint extends Sprite
+	public class TestFilters extends Sprite
 	{
-		private var sp:Sprite;
 		
-		public function TestAlphaTint() 
+		public function TestFilters() 
 		{
 			for (var i:int = 0; i < stage.stageWidth / 100; i++) 
 			{
@@ -38,14 +40,17 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { tint:null } );
+			Eaze.to(e.target, 1)
+				.ease(Quadratic.easeInOut)
+				.filter(GlowFilter, { blurX:0, blurY:0 }, true);
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
-			// tint 0x40 (64) / 0x80 (128) -> 50%
-			Eaze.to(e.target, 0.5, { tint:0x40ff00ff });
-		}
+			Eaze.to(e.target, 0.5)
+				.ease(Quadratic.easeInOut)
+				.filter(GlowFilter, { blurX:20, blurY:20, color:0x00ccff, knockout:true, quality:2 });
+		}		
 	}
 
 }

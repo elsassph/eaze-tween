@@ -5,14 +5,14 @@ package
 	import flash.events.MouseEvent;
 	
 	/**
-	 * Partial tint tweening test
-	 * @author Philippe / http://philippe.elsass.me
+	 * NOT overwriting properties test
+	 * @author Philippe / Proximity BBDO
 	 */
-	public class TestAlphaTint extends Sprite
+	public class TestOverwrite extends Sprite
 	{
 		private var sp:Sprite;
 		
-		public function TestAlphaTint() 
+		public function TestOverwrite() 
 		{
 			for (var i:int = 0; i < stage.stageWidth / 100; i++) 
 			{
@@ -38,14 +38,14 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { tint:null } );
+			Eaze.to(e.target, 1, { alpha:1 }, false);
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
-			// tint 0x40 (64) / 0x80 (128) -> 50%
-			Eaze.to(e.target, 0.5, { tint:0x40ff00ff });
+			Eaze.to(e.target, 1, { alpha:0 }, false);
 		}
+		
 	}
 
 }
