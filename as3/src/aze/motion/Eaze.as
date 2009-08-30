@@ -49,7 +49,7 @@ package aze.motion
 		 * @param	newState
 		 * @param	overwrite	Remove existing tweens of target
 		 */
-		static public function apply(target:Object, newState:Object, overwrite:Boolean = true):void
+		static public function apply(target:Object, newState:Object = null, overwrite:Boolean = true):void
 		{
 			new Eaze(target, 0, newState, overwrite).start();
 		}
@@ -467,7 +467,7 @@ package aze.motion
 		 * @param	parameters
 		 * @param	overwrite	Remove existing tweens of target
 		 */
-		public function chainApply(target:Object, parameters:Object, overwrite:Boolean = true):Eaze
+		public function chainApply(target:Object, parameters:Object = null, overwrite:Boolean = true):Eaze
 		{
 			return chain(new Eaze(target, 0, parameters, overwrite));
 		}
