@@ -3,7 +3,6 @@
 	import aze.motion.Eaze;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.utils.getTimer;
 	
 	/**
 	 * Tweens chaing test
@@ -46,7 +45,13 @@
 				.chainTo(sp2, 1, { alpha:1 } )
 				.onComplete(tweenComplete, sp2)
 				.chainTo(sp3, 1, { alpha:1 } )
-				.onComplete(tweenComplete, sp3);
+				.onComplete(tweenComplete, sp3)
+				.chainApply(this).onComplete(endOfChain);
+		}
+		
+		private function endOfChain():void
+		{
+			trace("end of chain");
 		}
 		
 		private function tweenComplete(sp:Sprite):void
