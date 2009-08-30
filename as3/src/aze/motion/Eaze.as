@@ -40,7 +40,7 @@ package aze.motion
 		static public function delay(duration:Number, target:Object = null, overwrite:Boolean = true):Eaze
 		{
 			if (!target) { target = Eaze; overwrite = false; }
-			return new Eaze(target, duration, null, overwrite).start();
+			return new Eaze(target, Math.max(0.0001, duration), null, overwrite).start();
 		}
 		
 		/**
@@ -95,6 +95,8 @@ package aze.motion
 		 */
 		static public function killTweensOf(target:Object):void
 		{
+			if (!target) return;
+			
 			var tween:Eaze = running[target];
 			var rprev:Eaze;
 			while (tween)
@@ -134,6 +136,7 @@ package aze.motion
 		{
 			var complete:Array = [];
 			var cd:CompleteData;
+			var ct:int = 0;
 			var t:Eaze = head;
 			
 			while (t)
@@ -178,6 +181,7 @@ package aze.motion
 					cd = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain);
 					t._chain = null;
 					complete.unshift(cd);
+					ct++;
 					
 					// finalize
 					t.isDead = true;
@@ -196,8 +200,11 @@ package aze.motion
 			}
 			
 			// honor completed tweens notifications & chaining
-			for each(cd in complete)
+			for (var i:int = 0; i < ct; i++) 
+			{
+				cd = complete[i];
 				cd.execute();
+			}
 		}
 		
 		//--- INSTANCE --------------------------------------------------------
@@ -271,6 +278,12 @@ package aze.motion
 		 */
 		public function start():Eaze
 		{
+			if (!target) 
+			{
+				dispose(false);
+				return this;
+			}
+			
 			// add to target's running tweens chain
 			if (killTweens) killTweensOf(target);		
 			var tween:Eaze = running[target];
@@ -317,7 +330,7 @@ package aze.motion
 		 */
 		public function ease(easing:IEazeEasing):Eaze
 		{
-			_ease = easing;
+			_ease = easing || defaultEase;
 			return this;
 		}
 		
@@ -329,8 +342,9 @@ package aze.motion
 		 */
 		public function filter(classRef:*, parameters:Object, removeWhenDone:Boolean = false):Eaze
 		{
-			if (classRef in specialProperties)
+			if (classRef in specialProperties && target)
 			{
+				if (!parameters) parameters = { };
 				if (removeWhenDone) parameters.remove = true;
 				specials = new specialProperties[classRef](target, parameters, specials);
 				if (_started) specials.init(reversed);
@@ -409,7 +423,7 @@ package aze.motion
 		/// Cleanup all references except main chaining
 		private function dispose(removeRunningReference:Boolean):void
 		{
-			if (removeRunningReference)
+			if (removeRunningReference && target)
 			{
 				var targetTweens:Eaze = running[target];
 				if (targetTweens == this) running[target] = this.rnext;
@@ -501,6 +515,8 @@ package aze.motion
 		// Add tween to list of tweens started at the end of this one
 		private function chain(tween:Eaze):Eaze
 		{
+			if (!tween) return null;
+			
 			if (!_chain) _chain = [];
 			_chain.push(tween);
 			return tween;
@@ -576,8 +592,12 @@ final class CompleteData
 		args = null;
 		if (chain)
 		{
-			for each(var tween:Eaze in chain) 
+			var len:int = chain.length;
+			for (var i:int = 0; i < len; i++) 
+			{
+				var tween:Eaze = chain[i];
 				tween.start();
+			}
 			chain = null;
 		}
 	}
