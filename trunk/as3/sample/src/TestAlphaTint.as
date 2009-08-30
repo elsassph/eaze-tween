@@ -44,7 +44,7 @@ package
 		private function over(e:MouseEvent):void 
 		{
 			// tint 0x40 (64) / 0x80 (128) -> 50%
-			Eaze.to(e.target, 0.5, { tint:0x40ff00ff });
+			Eaze.to(e.target, 0.5, { tint:0x40ffffff });
 		}
 	}
 

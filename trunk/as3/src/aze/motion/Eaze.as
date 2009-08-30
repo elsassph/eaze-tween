@@ -26,9 +26,10 @@ package aze.motion
 		/** Registered plugins */ 
 		static public const specialProperties:Dictionary = new Dictionary(); // see end of this file
 		
-		static private const running:Dictionary = new Dictionary(true);
+		static private const running:Dictionary = new Dictionary();
 		static private const ticker:Shape = createTicker();
 		static private var head:Eaze;
+		static private var tweenCount:int = 0;
 		
 		/**
 		 * Create a blank tween for delaying
@@ -138,9 +139,11 @@ package aze.motion
 			var cd:CompleteData;
 			var ct:int = 0;
 			var t:Eaze = head;
+			var cpt:int = 0;
 			
 			while (t)
 			{
+				cpt++;
 				var isComplete:Boolean;
 				if (t.isDead) isComplete = true;
 				else
@@ -205,6 +208,8 @@ package aze.motion
 				cd = complete[i];
 				cd.execute();
 			}
+			
+			tweenCount = cpt;
 		}
 		
 		//--- INSTANCE --------------------------------------------------------
@@ -245,6 +250,8 @@ package aze.motion
 		 */
 		public function Eaze(target:Object, duration:Number, newState:Object = null, overwrite:Boolean = true, reverse:Boolean = false)
 		{
+			if (!target) throw new ArgumentError("Eaze: target can not be null");
+			
 			this.target = target;
 			this.reversed = reverse;
 			this.killTweens = overwrite;
@@ -278,23 +285,17 @@ package aze.motion
 		 */
 		public function start():Eaze
 		{
-			if (!target) 
-			{
-				dispose(false);
-				return this;
-			}
+			if (!target) throw new ArgumentError("Eaze: target can not be null");
 			
 			// add to target's running tweens chain
-			if (killTweens) killTweensOf(target);		
+			if (killTweens) killTweensOf(target);
 			var tween:Eaze = running[target];
-			if (!tween) running[target] = this;
-			else { this.rnext = tween; running[target] = this; }
+			if (tween) rnext = tween;
+			running[target] = this;
 			
 			// add to main tween chain
-			_started = true;
 			startTime = getTimer();
 			endTime = startTime + _duration;
-			register(this);
 			
 			// configure properties
 			var p:EazeProperty = properties;
@@ -310,15 +311,17 @@ package aze.motion
 				s = s.next;
 			}
 			
-			// set values
-			if (reversed || _duration == 0) update(startTime);
-			
 			if (_onStart != null)
 			{
 				_onStart.apply(null, _onStartArgs);
 				_onStart = null;
 				_onStartArgs = null;
 			}
+			
+			// set values
+			if (reversed || _duration == 0) update(startTime);
+			_started = true;
+			register(this);
 			
 			return this;
 		}
@@ -423,7 +426,7 @@ package aze.motion
 		/// Cleanup all references except main chaining
 		private function dispose(removeRunningReference:Boolean):void
 		{
-			if (removeRunningReference && target)
+			if (removeRunningReference && target && _started)
 			{
 				var targetTweens:Eaze = running[target];
 				if (targetTweens == this) running[target] = this.rnext;
@@ -593,11 +596,7 @@ final class CompleteData
 		if (chain)
 		{
 			var len:int = chain.length;
-			for (var i:int = 0; i < len; i++) 
-			{
-				var tween:Eaze = chain[i];
-				tween.start();
-			}
+			for (var i:int = 0; i < len; i++) chain[i].start();
 			chain = null;
 		}
 	}
