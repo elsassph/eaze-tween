@@ -1,4 +1,4 @@
-﻿package  
+package  
 {
 	import aze.motion.Eaze;
 	import flash.display.Sprite;
@@ -30,6 +30,7 @@
 		{
 			trace("Hello", when);
 			if (when == "after") removeEventListener(Event.ENTER_FRAME, tick);
+			else return;
 			
 			// chain 3 fade-ins
 			var cpt:int = 0;
@@ -40,7 +41,8 @@
 			var sp3:Sprite = createItem(cpt * 100, 10);
 			sp3.name = String(++cpt);
 			
-			Eaze.to(sp1, 1, { alpha:1 } )
+			Eaze.delay(0)
+				.chainTo(sp1, 1, { alpha:1 } )
 				.onComplete(tweenComplete, sp1)
 				.chainTo(sp2, 1, { alpha:1 } )
 				.onComplete(tweenComplete, sp2)
