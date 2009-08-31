@@ -11,6 +11,7 @@ package aze.motion
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
+	import flash.utils.setInterval;
 	
 	/**
 	 * ...
@@ -115,7 +116,24 @@ package aze.motion
 		{
 			var sp:Shape = new Shape();
 			sp.addEventListener(Event.ENTER_FRAME, tick);
+			//setInterval(checkLeaks, 5000);
 			return sp;
+		}
+		
+		static private function checkLeaks():void
+		{
+			var targets:int = 0;
+			var t:Eaze;
+			for (var target:Object in running)
+			{
+				//trace(target);
+				targets++;
+			}
+			
+			var tweens:int = 0.
+			t = head;
+			while (t) { tweens++; t = t.next; }
+			trace("== check targets=", targets, "tweens=", tweens);
 		}
 		
 		/// Add tween to chain
@@ -429,7 +447,11 @@ package aze.motion
 			if (removeRunningReference && target && _started)
 			{
 				var targetTweens:Eaze = running[target];
-				if (targetTweens == this) running[target] = this.rnext;
+				if (targetTweens == this) 
+				{
+					if (rnext) running[target] = rnext;
+					else delete running[target];
+				}
 				else if (targetTweens)
 				{
 					var prev:Eaze = targetTweens;
@@ -438,17 +460,17 @@ package aze.motion
 					{
 						if (targetTweens == this)
 						{
-							prev.rnext = this.rnext;
+							prev.rnext = rnext;
 							break;
 						}
 						prev = targetTweens;
 						targetTweens = targetTweens.rnext;
 					}
 				}
-				this.rnext = null;
+				rnext = null;
 			}
 			
-			target = null;
+			if (_started) target = null;
 			if (properties)
 			{
 				properties.dispose();
