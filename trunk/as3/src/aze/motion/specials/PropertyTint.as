@@ -7,7 +7,7 @@ package aze.motion.specials
 	import flash.geom.ColorTransform;
 	
 	/**
-	 * ...
+	 * Tint tweening as a special property
 	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class PropertyTint extends EazeSpecial
@@ -87,6 +87,7 @@ package aze.motion.specials
 		{
 			start = delta = null;
 			tvalue = null;
+			super.dispose();
 		}
 	}
 
