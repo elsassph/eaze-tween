@@ -6,12 +6,8 @@ package aze.motion.specials
 	import flash.display.FrameLabel;
 	import flash.display.MovieClip;
 	
-	
-	// DISABLED, do not work
-	
-	
 	/**
-	 * ...
+	 * Frame tweening as a special property
 	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class PropertyFrame extends EazeSpecial

@@ -8,7 +8,7 @@ package aze.motion.specials
 	import flash.filters.GlowFilter;
 	
 	/**
-	 * ...
+	 * Filters tweening as special properties
 	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class PropertyFilter
@@ -172,8 +172,10 @@ class FilterBase extends EazeSpecial
 		
 	override public function dispose():void
 	{
-		start = null;
-		delta = null;
+		start = delta = null;
+		fvalue = null;
+		properties = null;
+		super.dispose();
 	}
 	
 	public function get filterClass():Class { return null; }

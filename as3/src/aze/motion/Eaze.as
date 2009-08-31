@@ -606,3 +606,4 @@ final class CompleteData
 import aze.motion.specials.PropertyTint; PropertyTint.register();
 import aze.motion.specials.PropertyFrame; PropertyFrame.register();
 import aze.motion.specials.PropertyFilter; PropertyFilter.register();
+import aze.motion.specials.PropertyVolume; PropertyVolume.register();
