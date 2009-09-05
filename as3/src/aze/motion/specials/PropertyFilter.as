@@ -47,6 +47,9 @@ class FilterBase extends EazeSpecial
 	private var fvalue:BitmapFilter;
 	private var start:Object;
 	private var delta:Object;
+	private var fColor:Object;
+	private var startColor:Object;
+	private var deltaColor:Object;
 	private var removeWhenFinished:Boolean;
 	private var isNewFilter:Boolean;
 	
@@ -55,7 +58,7 @@ class FilterBase extends EazeSpecial
 		super(target, value, next);
 		
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp, false);
+		var current:BitmapFilter = getCurrentFilter(disp, false); // read filter only
 		
 		properties = [];
 		fvalue = current.clone();
@@ -69,6 +72,8 @@ class FilterBase extends EazeSpecial
 			}
 			else
 			{
+				if (prop == "color" && !isNewFilter)
+					fColor = { r:(val >> 16) & 0xff, g:(val >> 8) & 0xff, b:val & 0xff };
 				fvalue[prop] = val;
 				properties.push(prop);
 			}
@@ -78,12 +83,20 @@ class FilterBase extends EazeSpecial
 	override public function init(reverse:Boolean):void 
 	{
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp);
+		var current:BitmapFilter = getCurrentFilter(disp, true); // get and remove
 		
 		var begin:BitmapFilter;
 		var end:BitmapFilter;
-		if (reverse) { begin = fvalue; end = current; }
-		else { begin = current; end = fvalue; }
+		var curColor:Object;
+		var endColor:Object;
+		var val:*;
+		if (fColor) 
+		{
+			val = current["color"];
+			curColor = { r:(val >> 16) & 0xff, g:(val >> 8) & 0xff, b:val & 0xff };
+		}
+		if (reverse) { begin = fvalue; end = current; startColor = fColor; endColor = curColor; }
+		else { begin = current; end = fvalue; startColor = curColor; endColor = fColor; }
 		
 		start = { };
 		delta = { };
@@ -91,7 +104,7 @@ class FilterBase extends EazeSpecial
 		for (var i:int = 0; i < properties.length; i++) 
 		{
 			var prop:String = properties[i];
-			var val:* = fvalue[prop];
+			val = fvalue[prop];
 			if (val is Boolean)
 			{
 				// filter options set immediately
@@ -115,10 +128,22 @@ class FilterBase extends EazeSpecial
 					current[prop] = 0;
 				}
 			}
+			else if (prop == "color" && fColor)
+			{
+				// decompose color for tweening
+				deltaColor = { 
+					r:endColor.r - startColor.r, 
+					g:endColor.g - startColor.g, 
+					b:endColor.b - startColor.b 
+				};
+				properties[i] = null; // not tweened
+				continue;
+			}
 			start[prop] = begin[prop];
 			delta[prop] = end[prop] - start[prop];
 		}
 		fvalue = null;
+		fColor = null;
 		
 		addFilter(disp, begin);
 	}
@@ -130,7 +155,11 @@ class FilterBase extends EazeSpecial
 		disp.filters = filters;
 	}
 	
-	private function getCurrentFilter(disp:DisplayObject, remove:Boolean = true):BitmapFilter
+	/**
+	 * Get existing matching filer or create new one.
+	 * If that's a new filter, set "isNewFilter" to true.
+	 */
+	private function getCurrentFilter(disp:DisplayObject, remove:Boolean):BitmapFilter
 	{
 		var model:Class = filterClass;
 		if (disp.filters)
@@ -156,16 +185,25 @@ class FilterBase extends EazeSpecial
 	override public function update(ease:IEazeEasing, k:Number):void
 	{
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp);
+		var current:BitmapFilter = getCurrentFilter(disp, true); // and remove
 		
+		var ek:Number = ease.calculate(k);
 		for (var i:int = 0; i < properties.length; i++) 
 		{
 			var prop:String = properties[i];
 			if (prop)
 			{
-				current[prop] = start[prop] + ease.calculate(k) * delta[prop];
+				current[prop] = start[prop] + ek * delta[prop];
 			}
 		}
+		if (startColor)
+		{
+			current["color"] = 
+				((startColor.r + ek * deltaColor.r) << 16)
+				| ((startColor.g + ek * deltaColor.g) << 8)
+				| (startColor.b + ek * deltaColor.b);
+		}
+		
 		if (!removeWhenFinished || k < 1.0) addFilter(disp, current);
 		else disp.filters = disp.filters;
 	}
@@ -173,7 +211,8 @@ class FilterBase extends EazeSpecial
 	override public function dispose():void
 	{
 		start = delta = null;
-		fvalue = null;
+		startColor = deltaColor = null;
+		fvalue = null; fColor = null;
 		properties = null;
 		super.dispose();
 	}
