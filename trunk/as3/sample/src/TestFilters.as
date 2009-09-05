@@ -42,7 +42,7 @@ package
 		{
 			Eaze.to(e.target, 1)
 				.ease(Quadratic.easeInOut)
-				.filter(GlowFilter, { blurX:0, blurY:0 }, true);
+				.filter(GlowFilter, { blurX:0, blurY:0, color:0xff00ff }, true);
 		}
 		
 		private function over(e:MouseEvent):void 
