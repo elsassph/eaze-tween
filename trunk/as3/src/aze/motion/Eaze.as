@@ -104,7 +104,7 @@ package aze.motion
 			while (tween)
 			{
 				tween.isDead = true;
-				tween.dispose(false);
+				tween.dispose();
 				if (tween.rnext) { rprev = tween; tween = tween.rnext; rprev.rnext = null; }
 				else tween = null;
 			}
@@ -206,7 +206,8 @@ package aze.motion
 					
 					// finalize
 					t.isDead = true;
-					t.dispose(true);
+					t.detach();
+					t.dispose();
 					
 					// remove from chain
 					var dead:Eaze = t;
@@ -306,10 +307,7 @@ package aze.motion
 			if (!target) throw new ArgumentError("Eaze: target can not be null");
 			
 			// add to target's running tweens chain
-			if (killTweens) killTweensOf(target);
-			var tween:Eaze = running[target];
-			if (tween) rnext = tween;
-			running[target] = this;
+			attach(killTweens);
 			
 			// add to main tween chain
 			startTime = getTimer();
@@ -427,7 +425,11 @@ package aze.motion
 				_onUpdate = _onComplete = null;
 				update(endTime);
 			}
-			else dispose(true);
+			else 
+			{
+				detach();
+				dispose();
+			}
 			isDead = true;
 		}
 		
@@ -441,10 +443,20 @@ package aze.motion
 			head = prev;
 		}
 		
-		/// Cleanup all references except main chaining
-		private function dispose(removeRunningReference:Boolean):void
+		/// associate target/tween in running Dictionnary
+		private function attach(exclusive:Boolean):void
 		{
-			if (removeRunningReference && target && _started)
+			if (exclusive) killTweensOf(target);
+			
+			var tween:Eaze = running[target];
+			if (tween) rnext = tween;
+			running[target] = this;
+		}
+		
+		/// delete target/tween association in running Dictionnary
+		private function detach():void
+		{
+			if (target && _started)
 			{
 				var targetTweens:Eaze = running[target];
 				if (targetTweens == this) 
@@ -469,7 +481,11 @@ package aze.motion
 				}
 				rnext = null;
 			}
-			
+		}
+		
+		/// Cleanup all references except main chaining
+		private function dispose():void
+		{
 			if (_started) target = null;
 			if (properties)
 			{
@@ -484,7 +500,7 @@ package aze.motion
 			if (_chain)
 			{
 				for each(var tween:Eaze in _chain) 
-					tween.dispose(false);
+					tween.dispose();
 				_chain = null;
 			}
 			if (slowTween)
@@ -541,6 +557,14 @@ package aze.motion
 		private function chain(tween:Eaze):Eaze
 		{
 			if (!tween) return null;
+			
+			if (target == Eaze) // no target, set same target as tween
+			{
+				detach();
+				target = tween.target;
+				killTweens = tween.killTweens;
+				attach(killTweens);
+			}
 			
 			if (!_chain) _chain = [];
 			_chain.push(tween);
