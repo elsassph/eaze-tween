@@ -284,7 +284,7 @@ package aze.motion
 			
 			this.target = target;
 			reversed = (direction == "backward");
-			killTweens = (overwrite == "overwrite");
+			killTweens = (overwrite != "keep");
 			this.duration = duration;
 			_ease = defaultEase;
 			
