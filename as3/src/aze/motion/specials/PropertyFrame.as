@@ -50,6 +50,8 @@ package aze.motion.specials
 			else 
 			{
 				// numeric frame index
+				var index:int = int(value);
+				if (index <= 0) index += mc.totalFrames;
 				frameEnd = Math.max(1, Math.min(mc.totalFrames, int(value)));
 			}
 		}
@@ -81,6 +83,14 @@ package aze.motion.specials
 			var mc:MovieClip = MovieClip(target);
 			
 			mc.gotoAndStop(Math.round(start + delta * ease.calculate(k)));
+		}
+		
+		public function getPreferredDuration():Number
+		{
+			var mc:MovieClip = MovieClip(target);
+			
+			var fps:Number = mc.stage ? mc.stage.frameRate : 30;
+			return Math.abs(Number(delta) / fps);
 		}
 	}
 
