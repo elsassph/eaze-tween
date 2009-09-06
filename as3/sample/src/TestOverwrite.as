@@ -38,12 +38,12 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { alpha:1 }, false);
+			Eaze.to(e.target, 1, { alpha:1 }, "keep");
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { alpha:0 }, false);
+			Eaze.to(e.target, 1, { alpha:0 }, "keep");
 		}
 		
 	}

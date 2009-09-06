@@ -38,13 +38,13 @@ package aze.motion
 		/**
 		 * Create a blank tween for delaying
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
-		 * @param	target	Optional target object (defaults to Eaze)
-		 * @param	overwrite	Remove existing tweens of target (if provided)
+		 * @param	target		Optional target object (defaults to first chained tween's target)
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 * @return Tween object
 		 */
-		static public function delay(duration:*, target:Object = null, overwrite:Boolean = true):Eaze
+		static public function delay(duration:*, target:Object = null, overwrite:String = "overwrite"):Eaze
 		{
-			if (!target) { target = Eaze; overwrite = false; }
+			if (!target) { target = Eaze; overwrite = "keep"; }
 			return new Eaze(target, Math.max(0.0001, duration), null, overwrite).start();
 		}
 		
@@ -52,9 +52,9 @@ package aze.motion
 		 * Immediately change target properties
 		 * @param	target
 		 * @param	newState
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 */
-		static public function apply(target:Object, newState:Object = null, overwrite:Boolean = true):void
+		static public function apply(target:Object, newState:Object = null, overwrite:String = "overwrite"):void
 		{
 			new Eaze(target, 0, newState, overwrite).start();
 		}
@@ -64,10 +64,10 @@ package aze.motion
 		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 * @return Tween object
 		 */
-		static public function to(target:Object, duration:*, newState:Object = null, overwrite:Boolean = true):Eaze
+		static public function to(target:Object, duration:*, newState:Object = null, overwrite:String = "overwrite"):Eaze
 		{
 			return new Eaze(target, duration, newState, overwrite).start();
 		}
@@ -77,22 +77,22 @@ package aze.motion
 		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 * @return Tween object
 		 */
-		static public function from(target:Object, duration:*, newState:Object = null, overwrite:Boolean = true):Eaze
+		static public function from(target:Object, duration:*, newState:Object = null, overwrite:String = "overwrite"):Eaze
 		{
-			return new Eaze(target, duration, newState, overwrite, true).start();
+			return new Eaze(target, duration, newState, overwrite, "backward").start();
 		}
 		
 		/**
 		 * Play target MovieClip timeline
 		 * @param	target
 		 * @param	frame		Frame number or label (default: totalFrames)
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 * @return	Tween object
 		 */
-		static public function play(target:Object, frame:* = 0, overwrite:Boolean = true):Eaze
+		static public function play(target:Object, frame:* = 0, overwrite:String = "overwrite"):Eaze
 		{
 			return new Eaze(target, "auto", { frame:frame }, overwrite).ease(Linear.easeNone).start();
 		}
@@ -275,16 +275,16 @@ package aze.motion
 		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
-		 * @param	overwrite	Remove existing tweens of target
-		 * @param	reverse		Animate "from" provided parameters instead of "to"
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
+		 * @param	direction	Animate "forward" or "backward"
 		 */
-		public function Eaze(target:Object, duration:*, newState:Object = null, overwrite:Boolean = true, reverse:Boolean = false)
+		public function Eaze(target:Object, duration:*, newState:Object = null, overwrite:String = "overwrite", direction:String = "forward")
 		{
 			if (!target) throw new ArgumentError("Eaze: target can not be null");
 			
 			this.target = target;
-			reversed = reverse;
-			killTweens = overwrite;
+			reversed = (direction == "backward");
+			killTweens = (overwrite == "overwrite");
 			this.duration = duration;
 			_ease = defaultEase;
 			
@@ -530,9 +530,9 @@ package aze.motion
 		 * Immediately change target properties
 		 * @param	target
 		 * @param	parameters
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 */
-		public function chainApply(target:Object, parameters:Object = null, overwrite:Boolean = true):Eaze
+		public function chainApply(target:Object, parameters:Object = null, overwrite:String = "overwrite"):Eaze
 		{
 			return chain(new Eaze(target, 0, parameters, overwrite));
 		}
@@ -542,10 +542,10 @@ package aze.motion
 		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	parameters
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 * @return Tween object
 		 */
-		public function chainTo(target:Object, duration:*, parameters:Object = null, overwrite:Boolean = true):Eaze
+		public function chainTo(target:Object, duration:*, parameters:Object = null, overwrite:String = "overwrite"):Eaze
 		{
 			return chain(new Eaze(target, duration, parameters, overwrite));
 		}
@@ -555,22 +555,22 @@ package aze.motion
 		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	parameters
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 * @return Tween object
 		 */
-		public function chainFrom(target:Object, duration:*, parameters:Object = null, overwrite:Boolean = true):Eaze
+		public function chainFrom(target:Object, duration:*, parameters:Object = null, overwrite:String = "overwrite"):Eaze
 		{
-			return chain(new Eaze(target, duration, parameters, overwrite, true));
+			return chain(new Eaze(target, duration, parameters, overwrite, "backward"));
 		}
 		
 		/**
 		 * Play target MovieClip timeline
 		 * @param	target
 		 * @param	frame		Frame number or label (default: totalFrames)
-		 * @param	overwrite	Remove existing tweens of target
+		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
 		 * @return	Tween object
 		 */
-		public function chainPlay(target:Object, frame:* = 0, overwrite:Boolean = true):Eaze
+		public function chainPlay(target:Object, frame:* = 0, overwrite:String = "overwrite"):Eaze
 		{
 			return chain(new Eaze(target, "auto", { frame:frame }, overwrite)).ease(Linear.easeNone);
 		}

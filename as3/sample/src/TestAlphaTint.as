@@ -43,8 +43,8 @@ package
 		
 		private function over(e:MouseEvent):void 
 		{
-			// tint 0x40 (64) / 0x80 (128) -> 50%
-			Eaze.to(e.target, 0.5, { tint:0x40ffffff });
+			// tint 0x60 (96) / 0x80 (128) -> 75%
+			Eaze.to(e.target, 1, { tint:0x60ffffff });
 		}
 	}
 
