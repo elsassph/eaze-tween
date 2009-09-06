@@ -1,9 +1,11 @@
 package aze.motion
 {
 	import aze.motion.easing.IEazeEasing;
+	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quadratic;
 	import aze.motion.easing.Quart;
 	import aze.motion.specials.EazeSpecial;
+	import aze.motion.specials.PropertyFrame;
 	import aze.motion.specials.PropertyTint;
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
@@ -23,6 +25,7 @@ package aze.motion
 		
 		/** Defines default easing method to use when no ease is specified */
 		static public var defaultEase:IEazeEasing = Quadratic.easeOut;
+		static public var defaultDuration:Object = { slow:1, normal:0.4, fast:0.2 };
 		
 		/** Registered plugins */ 
 		static public const specialProperties:Dictionary = new Dictionary(); // see end of this file
@@ -34,12 +37,12 @@ package aze.motion
 		
 		/**
 		 * Create a blank tween for delaying
-		 * @param	duration	Time to wait
+		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	target	Optional target object (defaults to Eaze)
 		 * @param	overwrite	Remove existing tweens of target (if provided)
 		 * @return Tween object
 		 */
-		static public function delay(duration:Number, target:Object = null, overwrite:Boolean = true):Eaze
+		static public function delay(duration:*, target:Object = null, overwrite:Boolean = true):Eaze
 		{
 			if (!target) { target = Eaze; overwrite = false; }
 			return new Eaze(target, Math.max(0.0001, duration), null, overwrite).start();
@@ -59,12 +62,12 @@ package aze.motion
 		/**
 		 * Animate target from current state to provided new state
 		 * @param	target
-		 * @param	duration	Time in seconds
+		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
 		 * @param	overwrite	Remove existing tweens of target
 		 * @return Tween object
 		 */
-		static public function to(target:Object, duration:Number, newState:Object = null, overwrite:Boolean = true):Eaze
+		static public function to(target:Object, duration:*, newState:Object = null, overwrite:Boolean = true):Eaze
 		{
 			return new Eaze(target, duration, newState, overwrite).start();
 		}
@@ -72,14 +75,26 @@ package aze.motion
 		/**
 		 * Animate target from provided new state to current state
 		 * @param	target
-		 * @param	duration	Time in seconds
+		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
 		 * @param	overwrite	Remove existing tweens of target
 		 * @return Tween object
 		 */
-		static public function from(target:Object, duration:Number, newState:Object = null, overwrite:Boolean = true):Eaze
+		static public function from(target:Object, duration:*, newState:Object = null, overwrite:Boolean = true):Eaze
 		{
 			return new Eaze(target, duration, newState, overwrite, true).start();
+		}
+		
+		/**
+		 * Play target MovieClip timeline
+		 * @param	target
+		 * @param	frame		Frame number or label
+		 * @param	overwrite	Remove existing tweens of target
+		 * @return	Tween object
+		 */
+		static public function play(target:Object, frame:*, overwrite:Boolean = true):Eaze
+		{
+			return new Eaze(target, "auto", { frame:frame }, overwrite).ease(Linear.easeNone).start();
 		}
 		
 		/**
@@ -126,7 +141,7 @@ package aze.motion
 			var t:Eaze;
 			for (var target:Object in running)
 			{
-				//trace(target);
+				trace(target);
 				targets++;
 			}
 			
@@ -154,7 +169,6 @@ package aze.motion
 		static private function updateTweens(time:int):void 
 		{
 			var complete:Array = [];
-			var cd:CompleteData;
 			var ct:int = 0;
 			var t:Eaze = head;
 			var cpt:int = 0;
@@ -199,7 +213,7 @@ package aze.motion
 				
 				if (isComplete) // tween ends
 				{
-					cd = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain);
+					var cd:CompleteData = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain);
 					t._chain = null;
 					complete.unshift(cd);
 					ct++;
@@ -222,11 +236,7 @@ package aze.motion
 			}
 			
 			// honor completed tweens notifications & chaining
-			for (var i:int = 0; i < ct; i++) 
-			{
-				cd = complete[i];
-				cd.execute();
-			}
+			for (var i:int = 0; i < ct; i++) complete[i].execute();
 			
 			tweenCount = cpt;
 		}
@@ -242,6 +252,7 @@ package aze.motion
 		private var reversed:Boolean;
 		private var killTweens:Boolean;
 		private var _started:Boolean;
+		private var duration:*;
 		private var _duration:Number;
 		private var _ease:IEazeEasing;
 		private var startTime:Number;
@@ -262,18 +273,19 @@ package aze.motion
 		/**
 		 * Creates a tween instance
 		 * @param	target
-		 * @param	duration	Time in seconds
+		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
 		 * @param	overwrite	Remove existing tweens of target
 		 * @param	reverse		Animate "from" provided parameters instead of "to"
 		 */
-		public function Eaze(target:Object, duration:Number, newState:Object = null, overwrite:Boolean = true, reverse:Boolean = false)
+		public function Eaze(target:Object, duration:*, newState:Object = null, overwrite:Boolean = true, reverse:Boolean = false)
 		{
 			if (!target) throw new ArgumentError("Eaze: target can not be null");
 			
 			this.target = target;
-			this.reversed = reverse;
-			this.killTweens = overwrite;
+			reversed = reverse;
+			killTweens = overwrite;
+			this.duration = duration;
 			_ease = defaultEase;
 			
 			// properties
@@ -294,9 +306,6 @@ package aze.motion
 			}
 			
 			slowTween = autoVisible || specials != null;
-			
-			// timing
-			_duration = duration * 1000;
 		}
 		
 		/**
@@ -306,26 +315,17 @@ package aze.motion
 		{
 			if (!target) throw new ArgumentError("Eaze: target can not be null");
 			
-			// add to target's running tweens chain
-			attach(killTweens);
+			// configure properties
+			var p:EazeProperty = properties;
+			while (p) { p.init(target, reversed); p = p.next; }
+			
+			var s:EazeSpecial = specials;
+			while (s) { s.init(reversed); s = s.next; }
 			
 			// add to main tween chain
 			startTime = getTimer();
+			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) * 1000;
 			endTime = startTime + _duration;
-			
-			// configure properties
-			var p:EazeProperty = properties;
-			while (p) 
-			{
-				p.init(target, reversed);
-				p = p.next;
-			}
-			var s:EazeSpecial = specials;
-			while (s)
-			{
-				s.init(reversed);
-				s = s.next;
-			}
 			
 			if (_onStart != null)
 			{
@@ -336,10 +336,29 @@ package aze.motion
 			
 			// set values
 			if (reversed || _duration == 0) update(startTime);
+			
 			_started = true;
+			attach(killTweens);
 			register(this);
 			
 			return this;
+		}
+		
+		/// Resolve non numeric durations
+		private function smartDuration(duration:String):Number
+		{
+			if (duration in defaultDuration) return defaultDuration[duration];
+			else if (duration == "auto")
+			{
+				// look for a special property willing to provide an optimal duration
+				var s:EazeSpecial = specials;
+				while (s)
+				{
+					if ("getPreferredDuration" in s) return s["getPreferredDuration"]();
+					s = s.next;
+				}
+			}
+			return defaultDuration.normal;
 		}
 		
 		/**
@@ -487,11 +506,7 @@ package aze.motion
 		private function dispose():void
 		{
 			if (_started) target = null;
-			if (properties)
-			{
-				properties.dispose();
-				properties = null;
-			}
+			if (properties) { properties.dispose(); properties = null; }
 			_ease = null;
 			_onStart = null;
 			_onStartArgs = null;
@@ -499,17 +514,12 @@ package aze.motion
 			_onCompleteArgs = null;
 			if (_chain)
 			{
-				for each(var tween:Eaze in _chain) 
-					tween.dispose();
+				for each(var tween:Eaze in _chain) tween.dispose();
 				_chain = null;
 			}
 			if (slowTween)
 			{
-				if (specials)
-				{
-					specials.dispose();
-					specials = null;
-				}
+				if (specials) { specials.dispose(); specials = null; }
 				autoVisible = false; 
 				_onUpdate = null;
 				_onUpdateArgs = null;
@@ -530,12 +540,12 @@ package aze.motion
 		/**
 		 * Animate target from current state to provided new state
 		 * @param	target
-		 * @param	duration	Time in seconds
+		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	parameters
 		 * @param	overwrite	Remove existing tweens of target
 		 * @return Tween object
 		 */
-		public function chainTo(target:Object, duration:Number, parameters:Object = null, overwrite:Boolean = true):Eaze
+		public function chainTo(target:Object, duration:*, parameters:Object = null, overwrite:Boolean = true):Eaze
 		{
 			return chain(new Eaze(target, duration, parameters, overwrite));
 		}
@@ -543,14 +553,26 @@ package aze.motion
 		/**
 		 * Animate target from provided new state to current state
 		 * @param	target
-		 * @param	duration	Time in seconds
+		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	parameters
 		 * @param	overwrite	Remove existing tweens of target
 		 * @return Tween object
 		 */
-		public function chainFrom(target:Object, duration:Number, parameters:Object = null, overwrite:Boolean = true):Eaze
+		public function chainFrom(target:Object, duration:*, parameters:Object = null, overwrite:Boolean = true):Eaze
 		{
 			return chain(new Eaze(target, duration, parameters, overwrite, true));
+		}
+		
+		/**
+		 * Play target MovieClip timeline
+		 * @param	target
+		 * @param	frame		Frame number or label
+		 * @param	overwrite	Remove existing tweens of target
+		 * @return	Tween object
+		 */
+		public function chainPlay(target:Object, frame:*, overwrite:Boolean = true):Eaze
+		{
+			return chain(new Eaze(target, "auto", { frame:frame }, overwrite)).ease(Linear.easeNone);
 		}
 		
 		// Add tween to list of tweens started at the end of this one

@@ -14,6 +14,8 @@ package
 		
 		public function TestFrame() 
 		{
+			stage.frameRate = 30;
+			
 			for (var i:int = 0; i < stage.stageWidth / 100; i++) 
 			{
 				for (var j:int = 0; j < stage.stageHeight / 100; j++) 
@@ -38,17 +40,17 @@ package
 		private function out(e:MouseEvent):void 
 		{
 			// from frame "squeeze" to frame "done"
-			Eaze.to(e.target, 0.5, { frame:"squeeze>done" } );
+			Eaze.play(e.target, "squeeze>done");
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
 			if (e.target.currentFrame == 1)
 				// regular tween
-				Eaze.to(e.target, 0.5, { frame:"firstGrow" } );
+				Eaze.play(e.target, "firstGrow");
 			else 
 				// from frame "start" to frame "start+end"
-				Eaze.to(e.target, 0.5, { frame:"grow+end" });
+				Eaze.play(e.target, "grow+end");
 		}
 		
 	}
