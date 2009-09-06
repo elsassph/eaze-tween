@@ -39,8 +39,11 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
+			// play to end
+			Eaze.play(e.target); 
+			
 			// from frame "squeeze" to frame "done"
-			Eaze.play(e.target, "squeeze>done");
+			//Eaze.play(e.target, "squeeze>done");
 		}
 		
 		private function over(e:MouseEvent):void 

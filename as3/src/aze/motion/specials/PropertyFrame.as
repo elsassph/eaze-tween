@@ -52,7 +52,7 @@ package aze.motion.specials
 				// numeric frame index
 				var index:int = int(value);
 				if (index <= 0) index += mc.totalFrames;
-				frameEnd = Math.max(1, Math.min(mc.totalFrames, int(value)));
+				frameEnd = Math.max(1, Math.min(mc.totalFrames, index));
 			}
 		}
 		

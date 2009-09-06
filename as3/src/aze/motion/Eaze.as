@@ -88,11 +88,11 @@ package aze.motion
 		/**
 		 * Play target MovieClip timeline
 		 * @param	target
-		 * @param	frame		Frame number or label
+		 * @param	frame		Frame number or label (default: totalFrames)
 		 * @param	overwrite	Remove existing tweens of target
 		 * @return	Tween object
 		 */
-		static public function play(target:Object, frame:*, overwrite:Boolean = true):Eaze
+		static public function play(target:Object, frame:* = 0, overwrite:Boolean = true):Eaze
 		{
 			return new Eaze(target, "auto", { frame:frame }, overwrite).ease(Linear.easeNone).start();
 		}
@@ -566,11 +566,11 @@ package aze.motion
 		/**
 		 * Play target MovieClip timeline
 		 * @param	target
-		 * @param	frame		Frame number or label
+		 * @param	frame		Frame number or label (default: totalFrames)
 		 * @param	overwrite	Remove existing tweens of target
 		 * @return	Tween object
 		 */
-		public function chainPlay(target:Object, frame:*, overwrite:Boolean = true):Eaze
+		public function chainPlay(target:Object, frame:* = 0, overwrite:Boolean = true):Eaze
 		{
 			return chain(new Eaze(target, "auto", { frame:frame }, overwrite)).ease(Linear.easeNone);
 		}
