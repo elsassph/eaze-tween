@@ -1,6 +1,5 @@
 package aze.motion.specials 
 {
-	import aze.motion.easing.IEazeEasing;
 	import aze.motion.Eaze;
 	import flash.filters.BlurFilter;
 	import flash.filters.ColorMatrixFilter;
@@ -29,7 +28,6 @@ package aze.motion.specials
 
 }
 
-import aze.motion.easing.IEazeEasing;
 import aze.motion.specials.EazeSpecial;
 import flash.display.DisplayObject;
 import flash.filters.BevelFilter;
@@ -50,7 +48,7 @@ class FilterBase extends EazeSpecial
 	private var fColor:Object;
 	private var startColor:Object;
 	private var deltaColor:Object;
-	private var removeWhenFinished:Boolean;
+	private var removeWhenComplete:Boolean;
 	private var isNewFilter:Boolean;
 	
 	public function FilterBase(target:Object, value:*, next:EazeSpecial)
@@ -68,7 +66,7 @@ class FilterBase extends EazeSpecial
 			if (prop == "remove") 
 			{
 				// special: remove filter when tween ends
-				removeWhenFinished = val;
+				removeWhenComplete = val;
 			}
 			else
 			{
@@ -182,30 +180,29 @@ class FilterBase extends EazeSpecial
 		return new model();
 	}
 	
-	override public function update(ease:IEazeEasing, k:Number):void
+	override public function update(ke:Number, isComplete:Boolean):void
 	{
 		var disp:DisplayObject = DisplayObject(target);
 		var current:BitmapFilter = getCurrentFilter(disp, true); // and remove
 		
-		var ek:Number = ease.calculate(k);
 		for (var i:int = 0; i < properties.length; i++) 
 		{
 			var prop:String = properties[i];
 			if (prop)
 			{
-				current[prop] = start[prop] + ek * delta[prop];
+				current[prop] = start[prop] + ke * delta[prop];
 			}
 		}
 		if (startColor)
 		{
 			current["color"] = 
-				((startColor.r + ek * deltaColor.r) << 16)
-				| ((startColor.g + ek * deltaColor.g) << 8)
-				| (startColor.b + ek * deltaColor.b);
+				((startColor.r + ke * deltaColor.r) << 16)
+				| ((startColor.g + ke * deltaColor.g) << 8)
+				| (startColor.b + ke * deltaColor.b);
 		}
 		
-		if (!removeWhenFinished || k < 1.0) addFilter(disp, current);
-		else disp.filters = disp.filters;
+		if (removeWhenComplete && isComplete) disp.filters = disp.filters;
+		else addFilter(disp, current);
 	}
 		
 	override public function dispose():void
