@@ -1,7 +1,5 @@
 package aze.motion.easing 
 {
-	import aze.motion.easing.IEazeEasing;
-	
 	/**
 	 * ...
 	 * @author Philippe / http://philippe.elsass.me
@@ -9,36 +7,19 @@ package aze.motion.easing
 	 */
 	final public class Quint
 	{
-		static public function get easeIn():IEazeEasing { return new QuintEaseIn(); }
-		static public function get easeOut():IEazeEasing { return new QuintEaseOut(); }
-		static public function get easeInOut():IEazeEasing { return new QuintEaseInOut(); }
+		static public function easeIn(k:Number):Number 
+		{
+			return k * k * k * k * k;
+		}
+		static public function easeOut(k:Number):Number 
+		{
+			return k * k * k * k * k;
+		}
+		static public function easeInOut(k:Number):Number 
+		{
+			if ((k *= 2) < 1) return 0.5 * k * k * k * k * k;
+			return 0.5 * ((k -= 2) * k * k * k * k + 2);
+		}
 	}
 
-}
-
-import aze.motion.easing.IEazeEasing;
-
-final class QuintEaseIn implements IEazeEasing
-{
-	public function calculate(k:Number):Number 
-	{
-		return k * k * k * k * k;
-	}
-}
-
-final class QuintEaseOut implements IEazeEasing
-{
-	public function calculate(k:Number):Number 
-	{
-		return --k * k * k * k * k + 1;
-	}
-}
-
-final class QuintEaseInOut implements IEazeEasing
-{
-	public function calculate(k:Number):Number 
-	{
-		if ((k *= 2) < 1) return 0.5 * k * k * k * k * k;
-		return 0.5 * ((k -= 2) * k * k * k * k + 2);
-	}
 }

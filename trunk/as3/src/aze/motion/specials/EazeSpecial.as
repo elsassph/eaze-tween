@@ -1,7 +1,5 @@
 package aze.motion.specials 
 {
-	import aze.motion.easing.IEazeEasing;
-	
 	/**
 	 * ...
 	 * @author Philippe / http://philippe.elsass.me
@@ -32,7 +30,7 @@ package aze.motion.specials
 			
 		}
 		
-		public function update(ease:IEazeEasing, k:Number):void
+		public function update(ke:Number, isComplete:Boolean):void
 		{
 			
 		}

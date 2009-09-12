@@ -1,6 +1,5 @@
 package aze.motion.specials 
 {
-	import aze.motion.easing.IEazeEasing;
 	import aze.motion.Eaze;
 	import aze.motion.specials.EazeSpecial;
 	import flash.display.FrameLabel;
@@ -78,11 +77,11 @@ package aze.motion.specials
 			return 1;
 		}
 		
-		override public function update(ease:IEazeEasing, k:Number):void
+		override public function update(ke:Number, isComplete:Boolean):void
 		{
 			var mc:MovieClip = MovieClip(target);
 			
-			mc.gotoAndStop(Math.round(start + delta * ease.calculate(k)));
+			mc.gotoAndStop(Math.round(start + delta * ke));
 		}
 		
 		public function getPreferredDuration():Number

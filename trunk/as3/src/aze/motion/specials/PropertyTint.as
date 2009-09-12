@@ -1,7 +1,6 @@
 package aze.motion.specials 
 {
 	import aze.motion.Eaze;
-	import aze.motion.easing.IEazeEasing;
 	import aze.motion.easing.Linear;
 	import flash.display.DisplayObject;
 	import flash.geom.ColorTransform;
@@ -63,14 +62,13 @@ package aze.motion.specials
 			);
 			tvalue = null;
 			
-			if (reverse) update(Linear.easeNone, 1);
+			if (reverse) update(0, false);
 		}
 		
-		override public function update(ease:IEazeEasing, k:Number):void
+		override public function update(ke:Number, isComplete:Boolean):void
 		{
 			var disp:DisplayObject = DisplayObject(target);
 			
-			var ke:Number = ease.calculate(k);
 			var t:ColorTransform = disp.transform.colorTransform;
 			
 			t.redMultiplier = start.redMultiplier + delta.redMultiplier * ke;

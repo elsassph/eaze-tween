@@ -1,6 +1,5 @@
 package aze.motion.specials 
 {
-	import aze.motion.easing.IEazeEasing;
 	import aze.motion.Eaze;
 	import aze.motion.specials.EazeSpecial;
 	import flash.media.SoundMixer;
@@ -30,7 +29,7 @@ package aze.motion.specials
 		
 		override public function init(reverse:Boolean):void 
 		{
-			targetVolume = ("soundTransform" in target) && target.soundTransform != null;
+			targetVolume = ("soundTransform" in target);// && (target.soundTransform != null);
 			var st:SoundTransform = targetVolume ? target.soundTransform : SoundMixer.soundTransform;
 			
 			var end:Number;
@@ -40,11 +39,11 @@ package aze.motion.specials
 			delta = end - start;
 		}
 		
-		override public function update(ease:IEazeEasing, k:Number):void 
+		override public function update(ke:Number, isComplete:Boolean):void 
 		{
 			var st:SoundTransform = targetVolume ? target.soundTransform : SoundMixer.soundTransform;
 			
-			st.volume = start + delta * ease.calculate(k);
+			st.volume = start + delta * ke;
 			
 			if (targetVolume) target.soundTransform = st;
 			else SoundMixer.soundTransform = st;

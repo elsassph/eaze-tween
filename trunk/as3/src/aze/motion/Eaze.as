@@ -1,6 +1,5 @@
 package aze.motion
 {
-	import aze.motion.easing.IEazeEasing;
 	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quadratic;
 	import aze.motion.easing.Quart;
@@ -24,7 +23,7 @@ package aze.motion
 		//--- STATIC ----------------------------------------------------------
 		
 		/** Defines default easing method to use when no ease is specified */
-		static public var defaultEase:IEazeEasing = Quadratic.easeOut;
+		static public var defaultEase:Function = Quadratic.easeOut;
 		static public var defaultDuration:Object = { slow:1, normal:0.4, fast:0.2 };
 		
 		/** Registered plugins */ 
@@ -182,14 +181,14 @@ package aze.motion
 				{
 					isComplete = time >= t.endTime;
 					var k:Number = isComplete ? 1.0 : (time - t.startTime) / t._duration;
+					var ke:Number = t._ease(k);
 					var target:Object = t.target;
-					var _ease:IEazeEasing = t._ease;
 					
 					// update
 					var p:EazeProperty = t.properties;
 					while (p)
 					{
-						target[p.name] = p.start + p.delta * _ease.calculate(k);
+						target[p.name] = p.start + p.delta * ke;
 						p = p.next;
 					}
 					
@@ -201,7 +200,7 @@ package aze.motion
 							var s:EazeSpecial = t.specials;
 							while (s)
 							{
-								s.update(_ease, k);
+								s.update(ke, isComplete);
 								s = s.next;
 							}
 						}
@@ -254,7 +253,7 @@ package aze.motion
 		private var _started:Boolean;
 		private var duration:*;
 		private var _duration:Number;
-		private var _ease:IEazeEasing;
+		private var _ease:Function;
 		private var startTime:Number;
 		private var endTime:Number;
 		private var properties:EazeProperty;
@@ -363,10 +362,10 @@ package aze.motion
 		
 		/**
 		 * Set easing method
-		 * @param	easing
+		 * @param	easing function(k:Number):Number
 		 * @return	Tween reference
 		 */
-		public function ease(easing:IEazeEasing):Eaze
+		public function ease(easing:Function):Eaze
 		{
 			_ease = easing || defaultEase;
 			return this;
