@@ -42,11 +42,11 @@ package
 			sp3.name = String(++cpt);
 			
 			Eaze.delay(0)
-				.chainTo(sp1, 1, { alpha:1 } )
+				.chainFrom(sp1, 1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp1)
-				.chainTo(sp2, 1, { alpha:1 } )
+				.chainFrom(sp2, 1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp2)
-				.chainTo(sp3, 1, { alpha:1 } )
+				.chainFrom(sp3, 1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp3)
 				.chainApply(this).onComplete(endOfChain);
 		}
@@ -68,7 +68,6 @@ package
 			sp.y = sy + 10;
 			sp.graphics.beginFill(Math.random() * 0xffffff);
 			sp.graphics.drawRect(0, 0, 80, 80);
-			sp.alpha = 0;
 			addChild(sp);
 			return sp;
 		}

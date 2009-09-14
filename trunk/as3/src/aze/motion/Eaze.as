@@ -251,6 +251,7 @@ package aze.motion
 		private var reversed:Boolean;
 		private var killTweens:Boolean;
 		private var _started:Boolean;
+		private var _inited:Boolean;
 		private var duration:*;
 		private var _duration:Number;
 		private var _ease:Function;
@@ -292,10 +293,11 @@ package aze.motion
 			for (var name:String in newState)
 			{
 				var value:* = newState[name];
-				if (!(name in target))
+				if (name in specialProperties)
 				{
-					if (name == "autoAlpha") { name = "alpha"; autoVisible = true; }
-					else if (name in specialProperties)
+					if (name == "alpha") autoVisible = true;
+					else if (name == "alphaVisible") { name = "alpha"; autoVisible = false; }
+					else
 					{
 						specials = new specialProperties[name](target, value, specials);
 						continue;
@@ -312,14 +314,7 @@ package aze.motion
 		 */
 		public function start():Eaze
 		{
-			if (!target) throw new ArgumentError("Eaze: target can not be null");
-			
-			// configure properties
-			var p:EazeProperty = properties;
-			while (p) { p.init(target, reversed); p = p.next; }
-			
-			var s:EazeSpecial = specials;
-			while (s) { s.init(reversed); s = s.next; }
+			if (!_inited) init();
 			
 			// add to main tween chain
 			startTime = getTimer();
@@ -335,12 +330,29 @@ package aze.motion
 			
 			// set values
 			if (reversed || _duration == 0) update(startTime);
+			if (autoVisible && _duration > 0) target.visible = true;
 			
 			_started = true;
 			attach(killTweens);
 			register(this);
 			
 			return this;
+		}
+		
+		/// Read target properties
+		private function init():void
+		{
+			if (_inited) return;
+			if (!target) throw new ArgumentError("Eaze: target can not be null");
+			
+			// configure properties
+			var p:EazeProperty = properties;
+			while (p) { p.init(target, reversed); p = p.next; }
+			
+			var s:EazeSpecial = specials;
+			while (s) { s.init(reversed); s = s.next; }
+			
+			_inited = true;
 		}
 		
 		/// Resolve non numeric durations
@@ -449,6 +461,25 @@ package aze.motion
 				dispose();
 			}
 			isDead = true;
+		}
+		
+		/**
+		 * Update tween values immediately
+		 */
+		public function updateNow():Eaze
+		{
+			if (_started)
+			{
+				var t:Number = Math.max(startTime, getTimer());
+				update(t);
+			}
+			else 
+			{
+				init()
+				endTime = 1;
+				update(0);
+			}
+			return this;
 		}
 		
 		/// Update this tween alone
@@ -670,6 +701,8 @@ final class CompleteData
 }
 
 // you can comment out the following lines to disable some plugins
+Eaze.specialProperties.alpha = true;
+Eaze.specialProperties.alphaVisible = true;
 import aze.motion.specials.PropertyTint; PropertyTint.register();
 import aze.motion.specials.PropertyFrame; PropertyFrame.register();
 import aze.motion.specials.PropertyFilter; PropertyFilter.register();
