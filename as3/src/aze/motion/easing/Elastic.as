@@ -7,7 +7,7 @@ package aze.motion.easing
 	 */
 	final public class Elastic
 	{
-		static public var easeIn:Function = eazeInWith(0.1, 0.4);
+		static public var easeIn:Function = easeInWith(0.1, 0.4);
 		static public var easeOut:Function = easeOutWith(0.1, 0.4);
 		static public var easeInOut:Function = easeInOutWith(0.1, 0.4);
 		
