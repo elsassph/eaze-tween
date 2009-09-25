@@ -13,7 +13,7 @@ package aze.motion.easing
 		}
 		static public function easeOut(k:Number):Number 
 		{
-			return k * k * k * k * k;
+			return (k = k - 1) * k * k * k * k + 1;
 		}
 		static public function easeInOut(k:Number):Number 
 		{
