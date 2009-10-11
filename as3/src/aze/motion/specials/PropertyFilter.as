@@ -1,8 +1,9 @@
 package aze.motion.specials 
 {
 	import aze.motion.Eaze;
+	import flash.display.DisplayObject;
+	import flash.filters.BitmapFilter;
 	import flash.filters.BlurFilter;
-	import flash.filters.ColorMatrixFilter;
 	import flash.filters.DropShadowFilter;
 	import flash.filters.GlowFilter;
 	
@@ -17,11 +18,45 @@ package aze.motion.specials
 			Eaze.specialProperties["blurFilter"] = FilterBlur;
 			Eaze.specialProperties["glowFilter"] = FilterGlow;
 			Eaze.specialProperties["dropShadowFilter"] = FilterDropShadow;
-			//Eaze.specialProperties["colorMatrixFilter "]= FilterDropShadow;
 			Eaze.specialProperties[BlurFilter] = FilterBlur;
 			Eaze.specialProperties[GlowFilter] = FilterGlow;
 			Eaze.specialProperties[DropShadowFilter] = FilterDropShadow;
-			//Eaze.specialProperties[ColorMatrixFilter] = FilterDropShadow;
+		}
+	
+		/**
+		 * @private
+		 * Get existing matching filer or create new one.
+		 */
+		static public function getCurrentFilter(filterClass:Class, disp:DisplayObject, remove:Boolean):BitmapFilter
+		{
+			if (disp.filters)
+			{
+				var index:int;
+				var filters:Array = disp.filters;
+				for (index = 0; index < filters.length; index++)
+					if (filters[index] is filterClass) 
+					{
+						if (remove) 
+						{
+							var filter:BitmapFilter = filters.splice(index, 1)[0];
+							disp.filters = filters;
+							return filter;
+						}
+						else return filters[index];
+					}
+			}
+			return null;
+		}
+		
+		/**
+		 * @private
+		 * Add a filter to a display object
+		 */
+		static public function addFilter(disp:DisplayObject, filter:BitmapFilter):void
+		{
+			var filters:Array = disp.filters || [];
+			filters.push(filter);
+			disp.filters = filters;
 		}
 		
 	}
@@ -29,11 +64,10 @@ package aze.motion.specials
 }
 
 import aze.motion.specials.EazeSpecial;
+import aze.motion.specials.PropertyFilter;
 import flash.display.DisplayObject;
-import flash.filters.BevelFilter;
 import flash.filters.BitmapFilter;
 import flash.filters.BlurFilter;
-import flash.filters.ColorMatrixFilter;
 import flash.filters.DropShadowFilter;
 import flash.filters.GlowFilter;
 
@@ -56,7 +90,12 @@ class FilterBase extends EazeSpecial
 		super(target, value, next);
 		
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp, false); // read filter only
+		var current:BitmapFilter = PropertyFilter.getCurrentFilter(filterClass, disp, false); // read filter only
+		if (!current)
+		{
+			isNewFilter = true;
+			current = new filterClass();
+		}
 		
 		properties = [];
 		fvalue = current.clone();
@@ -81,7 +120,8 @@ class FilterBase extends EazeSpecial
 	override public function init(reverse:Boolean):void 
 	{
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp, true); // get and remove
+		var current:BitmapFilter = PropertyFilter.getCurrentFilter(filterClass, disp, true); // get and remove
+		if (!current) current = new filterClass();
 		
 		var begin:BitmapFilter;
 		var end:BitmapFilter;
@@ -143,47 +183,21 @@ class FilterBase extends EazeSpecial
 		fvalue = null;
 		fColor = null;
 		
-		addFilter(disp, begin);
-	}
-	
-	private function addFilter(disp:DisplayObject, filter:BitmapFilter):void
-	{
-		var filters:Array = disp.filters || [];
-		filters.push(filter);
-		disp.filters = filters;
-	}
-	
-	/**
-	 * Get existing matching filer or create new one.
-	 * If that's a new filter, set "isNewFilter" to true.
-	 */
-	private function getCurrentFilter(disp:DisplayObject, remove:Boolean):BitmapFilter
-	{
-		var model:Class = filterClass;
-		if (disp.filters)
-		{
-			var index:int;
-			var filters:Array = disp.filters;
-			for (index = 0; index < filters.length; index++)
-				if (filters[index] is model) 
-				{
-					if (remove) 
-					{
-						var filter:BitmapFilter = filters.splice(index, 1)[0];
-						disp.filters = filters;
-						return filter;
-					}
-					else return filters[index];
-				}
-		}
-		isNewFilter = true;
-		return new model();
+		PropertyFilter.addFilter(disp, begin);
 	}
 	
 	override public function update(ke:Number, isComplete:Boolean):void
 	{
 		var disp:DisplayObject = DisplayObject(target);
-		var current:BitmapFilter = getCurrentFilter(disp, true); // and remove
+		var current:BitmapFilter = PropertyFilter.getCurrentFilter(filterClass, disp, true); // and remove
+		
+		if (removeWhenComplete && isComplete) 
+		{
+			disp.filters = disp.filters;
+			return;
+		}
+		
+		if (!current) current = new filterClass();
 		
 		for (var i:int = 0; i < properties.length; i++) 
 		{
@@ -201,8 +215,7 @@ class FilterBase extends EazeSpecial
 				| (startColor.b + ke * deltaColor.b);
 		}
 		
-		if (removeWhenComplete && isComplete) disp.filters = disp.filters;
-		else addFilter(disp, current);
+		PropertyFilter.addFilter(disp, current);
 	}
 		
 	override public function dispose():void
@@ -216,16 +229,6 @@ class FilterBase extends EazeSpecial
 	
 	public function get filterClass():Class { return null; }
 }
-
-/*class FilterColorMatrix extends FilterBase
-{
-	public function FilterColorMatrix(target:Object, value:*, next:EazeSpecial)
-	{
-		super(target, value, next);
-	}
-	
-	override public function get filterClass():Class { return ColorMatrixFilter; }
-}*/
 
 class FilterBlur extends FilterBase
 {

@@ -1,11 +1,13 @@
+/*
+	Eaze is an Actionscript 3 tween library by Philippe Elsass
+	Website: http://code.google.com/p/eaze-tween/
+	License: http://www.opensource.org/licenses/mit-license.php
+*/
 package aze.motion
 {
 	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quadratic;
-	import aze.motion.easing.Quart;
 	import aze.motion.specials.EazeSpecial;
-	import aze.motion.specials.PropertyFrame;
-	import aze.motion.specials.PropertyTint;
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.events.Event;
@@ -15,7 +17,7 @@ package aze.motion
 	import flash.utils.setInterval;
 	
 	/**
-	 * ...
+	 * Eaze tween object
 	 * @author Philippe - http://philippe.elsass.me
 	 */
 	final public class Eaze

@@ -68,7 +68,6 @@ package aze.motion.specials
 		override public function update(ke:Number, isComplete:Boolean):void
 		{
 			var disp:DisplayObject = DisplayObject(target);
-			
 			var t:ColorTransform = disp.transform.colorTransform;
 			
 			t.redMultiplier = start.redMultiplier + delta.redMultiplier * ke;
