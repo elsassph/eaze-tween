@@ -9,7 +9,7 @@ package
 	import flash.utils.setInterval;
 	
 	/**
-	 * ...
+	 * ColorMatrix tweening test
 	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class TestColorMatrix extends Sprite
@@ -28,6 +28,7 @@ package
 			view.sContrast.addEventListener(Event.CHANGE, animate);
 			view.sSaturation.addEventListener(Event.CHANGE, animate);
 			view.sHue.addEventListener(Event.CHANGE, animate);
+			view.sColorize.addEventListener(Event.CHANGE, animate);
 		}
 		
 		private function animate(e:Event):void 
@@ -37,7 +38,9 @@ package
 					brightness:view.sBrightness.value,
 					contrast:view.sContrast.value,
 					saturation:view.sSaturation.value,
-					hue:view.sHue.value
+					hue:view.sHue.value,
+					tint:parseInt("0x" + view.txtRGB.text),
+					colorize:view.sColorize.value
 				});
 		}
 		
