@@ -26,7 +26,7 @@ package
 		private var cy:Number;
 		
 		public function Test() 
-		//{
+		{
 			Eaze.defaultEase = Quart.easeIn;
 			
 			cx = stage.stageWidth / 2;

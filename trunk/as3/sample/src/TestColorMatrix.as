@@ -2,7 +2,6 @@ package
 {
 	import assets.ColorMatrixSample;
 	import aze.motion.Eaze;
-	import aze.motion.specials.PropertyColorMatrix;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.filters.ColorMatrixFilter;
@@ -19,8 +18,6 @@ package
 		
 		public function TestColorMatrix() 
 		{
-			PropertyColorMatrix.register();
-			
 			view = new ColorMatrixSample();
 			addChild(view);
 			
