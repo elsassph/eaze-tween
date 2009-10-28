@@ -32,11 +32,10 @@ package aze.motion.specials
 			if (value.contrast) colorMatrix.adjustContrast(value.contrast);
 			if (value.hue) colorMatrix.adjustHue(value.hue);
 			if (value.saturation) colorMatrix.adjustSaturation(value.saturation + 1);
-			if ("colorize" in value)
+			if (value.colorize)
 			{
-				var tint:uint = uint(value.colorize);
-				var coef:Number = Number((tint >> 24) || 0xff) / 256.0;
-				colorMatrix.colorize(tint & 0xffffff, coef);
+				var tint:uint = ("tint" in value) ? uint(value.tint) : 0xffffff;
+				colorMatrix.colorize(tint, value.colorize);
 			}
 			removeWhenComplete = (value.remove);
 		}
