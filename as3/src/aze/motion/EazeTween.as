@@ -550,7 +550,7 @@ package aze.motion
 		 */
 		public function delay(duration:*, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain(this).delay(duration, killTargetTweens);
+			if (_inited) return chain().delay(duration, killTargetTweens);
 			configure(duration);
 			if (autoStart) start(killTargetTweens);
 			return this;
@@ -564,7 +564,7 @@ package aze.motion
 		 */
 		public function apply(newState:Object = null, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain(this).apply(newState, killTargetTweens);
+			if (_inited) return chain().apply(newState, killTargetTweens);
 			configure(0, newState);
 			if (autoStart) start(killTargetTweens);
 			return this;
@@ -580,7 +580,7 @@ package aze.motion
 		 */
 		public function to(duration:*, newState:Object = null, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain(this).to(duration, newState, killTargetTweens);
+			if (_inited) return chain().to(duration, newState, killTargetTweens);
 			configure(duration, newState);
 			if (autoStart) start(killTargetTweens);
 			return this;
@@ -596,7 +596,7 @@ package aze.motion
 		 */
 		public function from(duration:*, initialState:Object = null, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain(this).from(duration, initialState, killTargetTweens);
+			if (_inited) return chain().from(duration, initialState, killTargetTweens);
 			configure(duration, initialState, true);
 			if (autoStart) start(killTargetTweens);
 			return this;
@@ -611,7 +611,7 @@ package aze.motion
 		 */
 		public function play(frame:* = 0, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain(this).play(frame, killTargetTweens);
+			if (_inited) return chain().play(frame, killTargetTweens);
 			configure("auto", { frame:frame });
 			if (autoStart) start(killTargetTweens);
 			return this;
@@ -623,7 +623,7 @@ package aze.motion
 		 */
 		public function chain(target:Object = null):EazeTween
 		{
-			var tween:EazeTween = new EazeTween(target, false);
+			var tween:EazeTween = new EazeTween(target || this.target, false);
 			if (!_chain) _chain = [];
 			_chain.push(tween);
 			return tween;
