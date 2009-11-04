@@ -1,6 +1,6 @@
 package  
 {
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
 	import flash.display.Sprite;
 	
 	/**
@@ -12,7 +12,7 @@ package
 		
 		public function WeightCheck() 
 		{
-			Eaze;
+			eaze(this);
 		}
 		
 	}

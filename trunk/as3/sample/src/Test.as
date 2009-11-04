@@ -2,13 +2,17 @@ package
 {
 	import aze.motion.easing.Elastic;
 	import aze.motion.easing.Quart;
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
+	import aze.motion.EazeTween;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.geom.ColorTransform;
 	import flash.geom.Point;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import net.hires.debug.Stats;
 	
 	/**
@@ -24,10 +28,11 @@ package
 		private var points:Vector.<Point>;
 		private var cx:Number;
 		private var cy:Number;
+		private var toggle:Boolean;
 		
 		public function Test() 
 		{
-			Eaze.defaultEase = Quart.easeIn;
+			EazeTween.defaultEase = Quart.easeIn;
 			
 			cx = stage.stageWidth / 2;
 			cy = stage.stageHeight / 2;
@@ -46,6 +51,22 @@ package
 			
 			addChild(new Stats());
 			addEventListener(Event.ENTER_FRAME, paint);
+			
+			var txt:TextField = new TextField();
+			txt.defaultTextFormat = new TextFormat("_sans", 10, 0xffffff);
+			txt.autoSize = "left";
+			txt.text = "Click to pause/resume tween engine";
+			txt.y = stage.stageHeight - 20;
+			addChild(txt);
+			
+			stage.addEventListener(MouseEvent.CLICK, toggleAnimation);
+		}
+		
+		private function toggleAnimation(e:MouseEvent):void 
+		{
+			toggle = !toggle;
+			if (toggle) EazeTween.pauseAllTweens();
+			else EazeTween.resumeAllTweens();
 		}
 		
 		private function paint(e:Event):void 
@@ -66,7 +87,7 @@ package
 		{
 			p.x = cx;
 			p.y = cy;
-			Eaze.to(p, t, { x:dx, y:dy })
+			eaze(p).to(t, { x:dx, y:dy })
 				.onComplete(restart, p, dx, dy, t);
 		}
 		

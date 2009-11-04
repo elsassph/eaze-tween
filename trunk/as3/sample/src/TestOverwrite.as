@@ -1,6 +1,6 @@
 package  
 {
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
@@ -38,12 +38,12 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { alphaVisible:1 }, "keep");
+			eaze(e.target).to(1, { alphaVisible:1 }, false);
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { alphaVisible:0 }, "keep");
+			eaze(e.target).to(1, { alphaVisible:0 }, false);
 		}
 		
 	}

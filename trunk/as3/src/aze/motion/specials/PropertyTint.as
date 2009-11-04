@@ -1,7 +1,7 @@
 package aze.motion.specials 
 {
-	import aze.motion.Eaze;
 	import aze.motion.easing.Linear;
+	import aze.motion.EazeTween;
 	import flash.display.DisplayObject;
 	import flash.geom.ColorTransform;
 	
@@ -13,16 +13,16 @@ package aze.motion.specials
 	{
 		static public function register():void
 		{
-			Eaze.specialProperties.tint = PropertyTint;
+			EazeTween.specialProperties.tint = PropertyTint;
 		}
 		
 		private var start:ColorTransform;
 		private var tvalue:ColorTransform;
 		private var delta:ColorTransform;
 		
-		function PropertyTint(target:Object, value:*, next:EazeSpecial)
+		function PropertyTint(target:Object, property:*, value:*, next:EazeSpecial)
 		{
-			super(target, value, next);
+			super(target, property, value, next);
 			var disp:DisplayObject = DisplayObject(target);
 			
 			if (value === null) tvalue = new ColorTransform();

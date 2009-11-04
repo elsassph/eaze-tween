@@ -1,6 +1,6 @@
 package aze.motion.specials 
 {
-	import aze.motion.Eaze;
+	import aze.motion.EazeTween;
 	import aze.motion.specials.EazeSpecial;
 	import flash.display.DisplayObject;
 	import flash.filters.ColorMatrixFilter;
@@ -19,13 +19,13 @@ package aze.motion.specials
 		
 		static public function register():void
 		{
-			Eaze.specialProperties["colorMatrixFilter"] = PropertyColorMatrix;
-			Eaze.specialProperties[ColorMatrixFilter] = PropertyColorMatrix;
+			EazeTween.specialProperties["colorMatrixFilter"] = PropertyColorMatrix;
+			EazeTween.specialProperties[ColorMatrixFilter] = PropertyColorMatrix;
 		}
 		
-		public function PropertyColorMatrix(target:Object, value:*, next:EazeSpecial)
+		public function PropertyColorMatrix(target:Object, property:*, value:*, next:EazeSpecial)
 		{
-			super(target, value, next);
+			super(target, property, value, next);
 			
 			colorMatrix = new ColorMatrix();
 			if (value.brightness) colorMatrix.adjustBrightness(value.brightness * 100);

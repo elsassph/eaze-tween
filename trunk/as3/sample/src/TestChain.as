@@ -1,6 +1,6 @@
 package  
 {
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	
@@ -17,7 +17,7 @@ package
 			
 			hello("before");
 			
-			Eaze.delay(0) // will happen on next frame
+			eaze(this).delay(0) // will happen on next frame
 				.onComplete(hello, "after");
 		}
 		
@@ -41,14 +41,14 @@ package
 			var sp3:Sprite = createItem(cpt * 100, 10);
 			sp3.name = String(++cpt);
 			
-			Eaze.delay(0)
-				.chainFrom(sp1, 1, { alpha:0 } ).updateNow()
+			eaze(this).delay(1)
+				.chain(sp1).from(1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp1)
-				.chainFrom(sp2, 1, { alpha:0 } ).updateNow()
+				.chain(sp2).from(1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp2)
-				.chainFrom(sp3, 1, { alpha:0 } ).updateNow()
+				.chain(sp3).from(1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp3)
-				.chainApply(this).onComplete(endOfChain);
+				.chain(this).apply().onComplete(endOfChain);
 		}
 		
 		private function endOfChain():void

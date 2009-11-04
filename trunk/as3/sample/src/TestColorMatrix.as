@@ -1,7 +1,7 @@
 package  
 {
 	import assets.ColorMatrixSample;
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.filters.ColorMatrixFilter;
@@ -14,7 +14,6 @@ package
 	public class TestColorMatrix extends Sprite
 	{	
 		private var view:ColorMatrixSample;
-		private var sampler:SamplerTest;
 		
 		public function TestColorMatrix() 
 		{
@@ -30,7 +29,8 @@ package
 		
 		private function animate(e:Event):void 
 		{
-			Eaze.to(view.mcPict, 1)
+			eaze(view.mcPict)
+				.to(1)
 				.filter(ColorMatrixFilter, { 
 					brightness:view.sBrightness.value,
 					contrast:view.sContrast.value,

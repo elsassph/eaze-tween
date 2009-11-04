@@ -7,18 +7,21 @@ package aze.motion.specials
 	public class EazeSpecial
 	{
 		protected var target:Object;
+		protected var property:String;
 		public var next:EazeSpecial;
 		
 		/**
 		 * Configure special tween
 		 * @param	target	Target object
+		 * @param	prop	Special property name
 		 * @param	value	Special property parameter(s)
 		 * @param	reverse	Animate "from" value instead of "to" value
 		 * @param	next	Reference to another special tween
 		 */
-		public function EazeSpecial(target:Object, value:*, next:EazeSpecial)
+		public function EazeSpecial(target:Object, property:*, value:*, next:EazeSpecial)
 		{
 			this.target = target;
+			this.property = property;
 			this.next = next;
 		}
 		
