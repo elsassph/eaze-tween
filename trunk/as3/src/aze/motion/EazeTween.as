@@ -184,7 +184,7 @@ package aze.motion
 				
 				if (isComplete) // tween ends
 				{
-					var cd:CompleteData = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain);
+					var cd:CompleteData = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain, t.endTime - time);
 					t._chain = null;
 					complete.unshift(cd);
 					ct++;
@@ -292,14 +292,14 @@ package aze.motion
 		/** 
 		 * Start this tween if it was created with autoStart disabled
 		 */
-		public function start(killTargetTweens:Boolean = true):void
+		public function start(killTargetTweens:Boolean = true, timeOffset:Number = 0):void
 		{
 			if (_started) return;
 			if (!_inited) init();
 			killTweens = killTargetTweens;
 			
 			// add to main tween chain
-			startTime = getTimer();
+			startTime = getTimer() + timeOffset;
 			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) * 1000;
 			endTime = startTime + _duration;
 			
@@ -681,12 +681,14 @@ final class CompleteData
 	private var callback:Function;
 	private var args:Array;
 	private var chain:Array;
+	private var diff:Number;
 	
-	function CompleteData(callback:Function, args:Array, chain:Array)
+	function CompleteData(callback:Function, args:Array, chain:Array, diff:Number)
 	{
 		this.callback = callback;
 		this.args = args;
 		this.chain = chain;
+		this.diff = diff;
 	}
 	
 	public function execute():void
@@ -700,7 +702,8 @@ final class CompleteData
 		if (chain)
 		{
 			var len:int = chain.length;
-			for (var i:int = 0; i < len; i++) chain[i].start();
+			for (var i:int = 0; i < len; i++) 
+				EazeTween(chain[i]).start(false, diff);
 			chain = null;
 		}
 	}
