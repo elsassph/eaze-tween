@@ -1,7 +1,7 @@
 package  
 {
 	import assets.Anim1;
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
@@ -40,20 +40,20 @@ package
 		private function out(e:MouseEvent):void 
 		{
 			// play to end
-			Eaze.play(e.target); 
+			eaze(e.target).play(); 
 			
 			// from frame "squeeze" to frame "done"
-			//Eaze.play(e.target, "squeeze>done");
+			//eaze(e.target).play("squeeze>done");
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
 			if (e.target.currentFrame == 1)
 				// regular tween
-				Eaze.play(e.target, "firstGrow");
+				eaze(e.target).play("firstGrow");
 			else 
 				// from frame "start" to frame "start+end"
-				Eaze.play(e.target, "grow+end");
+				eaze(e.target).play("grow+end");
 		}
 		
 	}

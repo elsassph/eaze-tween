@@ -1,6 +1,6 @@
 package aze.motion.specials 
 {
-	import aze.motion.Eaze;
+	import aze.motion.EazeTween;
 	import aze.motion.specials.EazeSpecial;
 	import flash.media.SoundMixer;
 	import flash.media.SoundTransform;
@@ -13,7 +13,7 @@ package aze.motion.specials
 	{
 		static public function register():void
 		{
-			Eaze.specialProperties.volume = PropertyVolume;
+			EazeTween.specialProperties.volume = PropertyVolume;
 		}
 		
 		private var start:Number;
@@ -21,9 +21,9 @@ package aze.motion.specials
 		private var vvalue:Number;
 		private var targetVolume:Boolean;
 		
-		public function PropertyVolume(target:Object, value:*, next:EazeSpecial)
+		public function PropertyVolume(target:Object, property:*, value:*, next:EazeSpecial)
 		{
-			super(target, value, next);
+			super(target, property, value, next);
 			vvalue = value;
 		}
 		

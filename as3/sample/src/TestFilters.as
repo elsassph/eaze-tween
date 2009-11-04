@@ -1,7 +1,7 @@
 package  
 {
 	import aze.motion.easing.Quadratic;
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.filters.BlurFilter;
@@ -34,20 +34,25 @@ package
 			sp.graphics.drawRect(0, 0, 80, 80);
 			addChild(sp);
 			
+			// apply filter
+			eaze(sp).filter(BlurFilter, { blurX:4, blurY:4 } );
+			
 			sp.addEventListener(MouseEvent.ROLL_OVER, over);
 			sp.addEventListener(MouseEvent.ROLL_OUT, out);
 		}
 		
 		private function out(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1)
+			eaze(e.target)
 				.ease(Quadratic.easeInOut)
+				.to(1)
 				.filter(GlowFilter, { blurX:0, blurY:0, color:0xff00ff }, true);
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 0.5)
+			eaze(e.target)
+				.to(0.5)
 				.ease(Quadratic.easeInOut)
 				.filter(GlowFilter, { blurX:20, blurY:20, color:0x00ccff, knockout:true, quality:2 });
 		}		

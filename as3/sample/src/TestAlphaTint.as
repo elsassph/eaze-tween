@@ -1,6 +1,6 @@
 package  
 {
-	import aze.motion.Eaze;
+	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
@@ -38,13 +38,13 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			Eaze.to(e.target, 1, { tint:null } );
+			eaze(e.target).to(1, { tint:null } );
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
 			// tint 0x60 (96) / 0x80 (128) -> 75%
-			Eaze.to(e.target, 1, { tint:0x60ffffff });
+			eaze(e.target).to(1, { tint:0x60ffffff });
 		}
 	}
 

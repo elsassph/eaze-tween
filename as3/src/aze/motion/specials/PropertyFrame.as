@@ -1,6 +1,6 @@
 package aze.motion.specials 
 {
-	import aze.motion.Eaze;
+	import aze.motion.EazeTween;
 	import aze.motion.specials.EazeSpecial;
 	import flash.display.FrameLabel;
 	import flash.display.MovieClip;
@@ -13,7 +13,7 @@ package aze.motion.specials
 	{
 		static public function register():void
 		{
-			Eaze.specialProperties.frame = PropertyFrame;
+			EazeTween.specialProperties.frame = PropertyFrame;
 		}
 		
 		private var start:int;
@@ -21,9 +21,9 @@ package aze.motion.specials
 		private var frameStart:*;
 		private var frameEnd:*;
 		
-		public function PropertyFrame(target:Object, value:*, next:EazeSpecial)
+		public function PropertyFrame(target:Object, property:*, value:*, next:EazeSpecial)
 		{
-			super(target, value, next);
+			super(target, property, value, next);
 		
 			var mc:MovieClip = MovieClip(target);
 			
