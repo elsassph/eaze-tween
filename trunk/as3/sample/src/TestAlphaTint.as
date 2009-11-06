@@ -43,8 +43,10 @@ package
 		
 		private function over(e:MouseEvent):void 
 		{
-			// tint 0x60 (96) / 0x80 (128) -> 75%
-			eaze(e.target).to(1, { tint:0x60ffffff });
+			//eaze(e.target).to(1, { tint:0xffffff }); // classic
+			//eaze(e.target).to(1, { tint:[0xffffff, 0.5] }); // 50% tint
+			//eaze(e.target).to(1, { tint:[0xffffff, 0, 1.5] }); // lighten
+			eaze(e.target).to(1, { tint:[0xffffff, 0, 0.5] }); // darken
 		}
 	}
 
