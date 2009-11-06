@@ -28,11 +28,17 @@ package aze.motion.specials
 			if (value === null) tvalue = new ColorTransform();
 			else 
 			{
-				var color:uint = value;
-				var mix:Number = (color > 0xffffff) ? ((color >> 24) & 0xff) / 255.0 : 0.5;
-				var amix:Number;
-				if (mix <= 0.5) { amix = 1 - mix * 2; mix *= 2; }
-				else { amix = 1; mix = Math.min(1, (mix - 0.49) * 2); }
+				var mix:Number = 1;
+				var amix:Number = 0;
+				var color:uint;
+				if (value is Array) 
+				{
+					var a:Array = value as Array;
+					if (a.length > 1) mix = a[1];
+					if (a.length > 2) amix = a[2];
+					color = a[0];
+				}
+				else color = value;
 				
 				tvalue = new ColorTransform();
 				tvalue.redMultiplier = amix;
