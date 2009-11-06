@@ -28,7 +28,7 @@ package aze.motion.specials
 			super(target, property, value, next);
 			
 			colorMatrix = new ColorMatrix();
-			if (value.brightness) colorMatrix.adjustBrightness(value.brightness * 100);
+			if (value.brightness) colorMatrix.adjustBrightness(value.brightness * 0xff);
 			if (value.contrast) colorMatrix.adjustContrast(value.contrast);
 			if (value.hue) colorMatrix.adjustHue(value.hue);
 			if (value.saturation) colorMatrix.adjustSaturation(value.saturation + 1);
