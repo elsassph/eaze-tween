@@ -25,7 +25,7 @@ package aze.motion
 		//--- STATIC ----------------------------------------------------------
 		
 		/** Defines default easing method to use when no ease is specified */
-		static public var defaultEase:Function = Quadratic.easeOut;
+		static public var defaultEasing:Function = Quadratic.easeOut;
 		static public var defaultDuration:Object = { slow:1, normal:0.4, fast:0.2 };
 		
 		/** Registered plugins */ 
@@ -254,7 +254,7 @@ package aze.motion
 			
 			this.target = target;
 			this.autoStart = autoStart;
-			_ease = defaultEase;
+			_ease = defaultEasing;
 		}
 		
 		/// Set tween parameters
@@ -353,12 +353,12 @@ package aze.motion
 		
 		/**
 		 * Set easing method
-		 * @param	easing function(k:Number):Number
+		 * @param	f Easing function(k:Number):Number
 		 * @return	Tween reference
 		 */
-		public function ease(easing:Function):EazeTween
+		public function easing(f:Function):EazeTween
 		{
-			_ease = easing || defaultEase;
+			_ease = f || defaultEasing;
 			return this;
 		}
 		

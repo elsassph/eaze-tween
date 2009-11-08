@@ -32,7 +32,7 @@ package
 		
 		public function Test() 
 		{
-			EazeTween.defaultEase = Quart.easeIn;
+			EazeTween.defaultEasing = Quart.easeIn;
 			
 			cx = stage.stageWidth / 2;
 			cy = stage.stageHeight / 2;

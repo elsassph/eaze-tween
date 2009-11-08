@@ -25,15 +25,15 @@ package
 		
 		public function TestBezier() 
 		{
-			p0 = createShape(0x990000);
-			p1 = createShape(0x009900);
-			p2 = createShape(0x000099);
-			p3 = createShape(0xff0000);
+			p0 = createShape(0xFFE6C4);
+			p1 = createShape(0xFFCA82);
+			p2 = createShape(0xFFA953);
+			p3 = createShape(0xff9900);
 			
-			pt = createShape(0xffffff);
+			pt = createShape(0xFFE6C4);
 			
 			info = new TextField();
-			info.defaultTextFormat = new TextFormat("_sans", 10, 0xffffff);
+			info.defaultTextFormat = new TextFormat("_sans", 10, 0x999999);
 			info.autoSize = "left";
 			addChild(info);
 			updateInfo();
@@ -60,9 +60,9 @@ package
 		private function createShape(color:uint):Shape
 		{
 			var sp:Shape = new Shape();
-			sp.graphics.lineStyle(2, 0xcccccc);
+			sp.graphics.lineStyle(2, 0xff9900);
 			sp.graphics.beginFill(color);
-			sp.graphics.drawCircle(0, 0, 8);
+			sp.graphics.drawCircle(0, 0, 6);
 			sp.graphics.endFill();
 			sp.x = stage.stageWidth / 2;
 			sp.y = stage.stageHeight / 2;
@@ -81,25 +81,29 @@ package
 			
 			graphics.clear();
 			graphics.moveTo(pt.x, pt.y);
-			graphics.lineStyle(2, 0xcccccc);
+			graphics.lineStyle(2, 0xdddddd);
+			
+			eaze(pt).apply( { tint:null } );
 			
 			if (through)
 			{
 				// double array for "bezier through" mode
 				eaze(pt).to(2, { 
 						x:[[p1.x, p2.x, p3.x]],
-						y:[[p1.y, p2.y, p3.y]]
+						y:[[p1.y, p2.y, p3.y]],
+						tint:0xff9900
 					})
-					.ease(Linear.easeNone)
+					.easing(Linear.easeNone)
 					.onUpdate(draw);
 			}
 			else 
 			{
 				eaze(pt).to(2, { 
 						x:[p1.x, p2.x, p3.x],
-						y:[p1.y, p2.y, p3.y]
+						y:[p1.y, p2.y, p3.y],
+						tint:0xff9900
 					})
-					.ease(Linear.easeNone)
+					.easing(Linear.easeNone)
 					.onUpdate(draw);
 			}
 		}
@@ -111,8 +115,8 @@ package
 		
 		private function randomPos(sp:Shape):void
 		{
-			sp.x = stage.stageWidth * Math.random();
-			sp.y = stage.stageHeight * Math.random();
+			sp.x = 40 + (stage.stageWidth - 80) * Math.random();
+			sp.y = 40 + (stage.stageHeight - 80) * Math.random();
 		}
 		
 	}
