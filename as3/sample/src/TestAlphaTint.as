@@ -45,8 +45,14 @@ package
 		{
 			//eaze(e.target).to(1, { tint:0xffffff }); // classic
 			//eaze(e.target).to(1, { tint:[0xffffff, 0.5] }); // 50% tint
-			//eaze(e.target).to(1, { tint:[0xffffff, 0, 1.5] }); // lighten
-			eaze(e.target).to(1, { tint:[0xffffff, 0, 0.5] }); // darken
+			//eaze(e.target).to(1, { tint:[0, 0, 1.5] }); // lighten, no tint
+			//eaze(e.target).to(1, { tint:[0, 0, 0.5] }); // darken, no tint
+			
+			// idem, smart syntax
+			//eaze(e.target).to(1).tint(0xffffff); 
+			eaze(e.target).to(1).tint(0xffffff, 0.5); 
+			//eaze(e.target).to(1).tint(0, 0, 1.5); 
+			//eaze(e.target).to(1).tint(0, 0, 0.5); 
 		}
 	}
 
