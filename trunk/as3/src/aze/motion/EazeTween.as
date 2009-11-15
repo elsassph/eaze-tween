@@ -278,9 +278,12 @@ package aze.motion
 						continue;
 					}
 				}
-				else if (value is Array && target[name] is Number && "__bezier" in specialProperties)
+				else if (value is Array && target[name] is Number)
 				{
-					specials = new specialProperties["__bezier"](target, name, value, specials);
+					if (value.length > 1 && "__bezier" in specialProperties)
+						specials = new specialProperties["__bezier"](target, name, value, specials);
+					else if ("__short" in specialProperties)
+						specials = new specialProperties["__short"](target, name, value[0], specials);
 					continue;
 				}
 				properties = new EazeProperty(name, value, properties);
@@ -363,30 +366,52 @@ package aze.motion
 		}
 		
 		/**
-		 * Add a filter animation
+		 * Add a filter animation (PropertyFilter must be activated)
 		 * @param	classRef	Filter class (ex: BlurFilter or "blurFilter")
 		 * @param	parameters
 		 * @return	Tween reference
 		 */
 		public function filter(classRef:*, parameters:Object, removeWhenDone:Boolean = false):EazeTween
 		{
-			if (classRef in specialProperties && target)
+			if (!parameters) parameters = { };
+			if (removeWhenDone) parameters.remove = true;
+			addSpecial(classRef, parameters);
+			return this;
+		}
+		
+		/**
+		 * Add a tint filter (PropertyTint must be activated)
+		 * @param	tint		Color
+		 * @param	colorize	Color offset ratio (0-1)
+		 * @param	multiply	Existing color ratio (0-1+)
+		 * @return	Tween reference
+		 */
+		public function tint(tint:uint, colorize:Number = 1, multiply:Number = NaN):EazeTween
+		{
+			if (isNaN(multiply)) multiply = 1 - colorize;
+			addSpecial("tint", [tint, colorize, multiply]);
+			return this;
+		}
+		
+		/// apply or append a special property tween
+		private function addSpecial(name:*, parameters:Object):void
+		{
+			if (name in specialProperties && target)
 			{
 				if (!parameters) parameters = { };
 				if (!_inited)
 				{
-					// apply filter
-					new specialProperties[classRef](target, classRef, parameters, null).init(true);
+					// apply
+					EazeSpecial(new specialProperties[name](target, name, parameters, null))
+						.init(true);
 				}
 				else 
 				{
-					if (removeWhenDone) parameters.remove = true;
-					specials = new specialProperties[classRef](target, classRef, parameters, specials);
+					specials = new specialProperties[name](target, name, parameters, specials);
 					if (_started) specials.init(reversed);
 					slowTween = true;
 				}
 			}
-			return this;
 		}
 		
 		/**
@@ -718,3 +743,4 @@ import aze.motion.specials.PropertyFilter; PropertyFilter.register();
 import aze.motion.specials.PropertyVolume; PropertyVolume.register();
 import aze.motion.specials.PropertyColorMatrix; PropertyColorMatrix.register();
 import aze.motion.specials.PropertyBezier; PropertyBezier.register();
+import aze.motion.specials.PropertyShortRotation; PropertyShortRotation.register();

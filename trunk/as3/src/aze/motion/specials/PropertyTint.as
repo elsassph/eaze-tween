@@ -36,6 +36,7 @@ package aze.motion.specials
 					var a:Array = value as Array;
 					if (a.length > 1) mix = a[1];
 					if (a.length > 2) amix = a[2];
+					else amix = 1 - mix;
 					color = a[0];
 				}
 				else color = value;
