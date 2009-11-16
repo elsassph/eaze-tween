@@ -280,10 +280,13 @@ package aze.motion
 				}
 				else if (value is Array && target[name] is Number)
 				{
-					if (value.length > 1 && "__bezier" in specialProperties)
+					if (value.length == 1 && !isNaN(value[0]))
+					{
+						if ("__short" in specialProperties)
+							specials = new specialProperties["__short"](target, name, value[0], specials);
+					}
+					else if ("__bezier" in specialProperties)
 						specials = new specialProperties["__bezier"](target, name, value, specials);
-					else if ("__short" in specialProperties)
-						specials = new specialProperties["__short"](target, name, value[0], specials);
 					continue;
 				}
 				properties = new EazeProperty(name, value, properties);
