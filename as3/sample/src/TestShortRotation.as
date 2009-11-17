@@ -1,4 +1,4 @@
-﻿package  
+package  
 {
 	import aze.motion.eaze;
 	import flash.display.Shape;
@@ -26,7 +26,7 @@
 		private function click(e:MouseEvent):void 
 		{
 			var a:Number = Math.atan2(mouseY - arrow.y, mouseX - arrow.x) * 180 / Math.PI;
-			eaze(arrow).to("slow", { rotation:[a] } );
+			eaze(arrow).to("slow").short("rotation", a);
 		}
 		
 		private function createArrow():Shape

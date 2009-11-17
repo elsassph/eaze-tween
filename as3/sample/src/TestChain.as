@@ -3,6 +3,7 @@ package
 	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.filters.BlurFilter;
 	
 	/**
 	 * Tweens chaing test
@@ -48,7 +49,8 @@ package
 				.onComplete(tweenComplete, sp2)
 				.chain(sp3).from(1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp3)
-				.chain(this).apply().onComplete(endOfChain);
+				.chain(this).apply().onComplete(endOfChain)
+				.to("slow").filter(BlurFilter, { blurX:10, blurY:10, quality:2 });
 		}
 		
 		private function endOfChain():void

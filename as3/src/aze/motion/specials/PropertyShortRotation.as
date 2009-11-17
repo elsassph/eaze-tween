@@ -1,4 +1,4 @@
-﻿package aze.motion.specials 
+package aze.motion.specials 
 {
 	import aze.motion.EazeTween;
 	import aze.motion.specials.EazeSpecial;
@@ -15,13 +15,15 @@
 		}
 		
 		private var fvalue:Number;
+		private var radius:Number;
 		private var start:Number;
 		private var delta:Number;
 		
 		public function PropertyShortRotation(target:Object, property:*, value:*, next:EazeSpecial) 
 		{
 			super(target, property, value, next);
-			fvalue = value;
+			fvalue = value[0];
+			radius = value[1] ? Math.PI : 180;
 		}
 		
 		override public function init(reverse:Boolean):void 
@@ -30,8 +32,8 @@
 			var end:Number;
 			if (reverse) { end = start; target[property] = start = fvalue; }
 			else { end = fvalue; }
-			while (end - start > 180) start += 360;
-			while (end - start < -180) start -= 360;
+			while (end - start > radius) start += radius * 2;
+			while (end - start < -radius) start -= radius * 2;
 			delta = end - start;
 		}
 		
