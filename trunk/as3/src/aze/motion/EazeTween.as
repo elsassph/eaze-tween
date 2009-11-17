@@ -280,12 +280,7 @@ package aze.motion
 				}
 				else if (value is Array && target[name] is Number)
 				{
-					if (value.length == 1 && !isNaN(value[0]))
-					{
-						if ("__short" in specialProperties)
-							specials = new specialProperties["__short"](target, name, value[0], specials);
-					}
-					else if ("__bezier" in specialProperties)
+					if ("__bezier" in specialProperties)
 						specials = new specialProperties["__bezier"](target, name, value, specials);
 					continue;
 				}
@@ -378,12 +373,12 @@ package aze.motion
 		{
 			if (!parameters) parameters = { };
 			if (removeWhenDone) parameters.remove = true;
-			addSpecial(classRef, parameters);
+			addSpecial(classRef, classRef, parameters);
 			return this;
 		}
 		
 		/**
-		 * Add a tint filter (PropertyTint must be activated)
+		 * Add a colorTransform tween (PropertyTint must be activated)
 		 * @param	tint		Color
 		 * @param	colorize	Color offset ratio (0-1)
 		 * @param	multiply	Existing color ratio (0-1+)
@@ -392,25 +387,37 @@ package aze.motion
 		public function tint(tint:uint, colorize:Number = 1, multiply:Number = NaN):EazeTween
 		{
 			if (isNaN(multiply)) multiply = 1 - colorize;
-			addSpecial("tint", [tint, colorize, multiply]);
+			addSpecial("tint", "tint", [tint, colorize, multiply]);
+			return this;
+		}
+		
+		/**
+		 * Add a short-rotation tween (PropertyShortRotation must be activated)
+		 * @param	name	Target member name (ie. "rotation")
+		 * @param	value	Rotation value
+		 * @param	useRadian	Use radians instead of degrees
+		 * @return	Tween reference
+		 */
+		public function short(name:String, value:Number, useRadian:Boolean = false):EazeTween
+		{
+			addSpecial("__short", name, [value, useRadian]);
 			return this;
 		}
 		
 		/// apply or append a special property tween
-		private function addSpecial(name:*, parameters:Object):void
+		private function addSpecial(special:*, name:*, value:Object):void
 		{
-			if (name in specialProperties && target)
+			if (special in specialProperties && target)
 			{
-				if (!parameters) parameters = { };
-				if (!_inited)
+				if (!_inited && autoStart)
 				{
 					// apply
-					EazeSpecial(new specialProperties[name](target, name, parameters, null))
+					EazeSpecial(new specialProperties[special](target, name, value, null))
 						.init(true);
 				}
 				else 
 				{
-					specials = new specialProperties[name](target, name, parameters, specials);
+					specials = new specialProperties[special](target, name, value, specials);
 					if (_started) specials.init(reversed);
 					slowTween = true;
 				}
@@ -737,13 +744,3 @@ final class CompleteData
 	}
 }
 
-// you can comment out the following lines to disable some plugins
-EazeTween.specialProperties.alpha = true;
-EazeTween.specialProperties.alphaVisible = true;
-import aze.motion.specials.PropertyTint; PropertyTint.register();
-import aze.motion.specials.PropertyFrame; PropertyFrame.register();
-import aze.motion.specials.PropertyFilter; PropertyFilter.register();
-import aze.motion.specials.PropertyVolume; PropertyVolume.register();
-import aze.motion.specials.PropertyColorMatrix; PropertyColorMatrix.register();
-import aze.motion.specials.PropertyBezier; PropertyBezier.register();
-import aze.motion.specials.PropertyShortRotation; PropertyShortRotation.register();
