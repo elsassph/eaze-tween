@@ -18,14 +18,14 @@ package aze.motion.easing
 					return k * k * ((s + 1) * k - s);
 				}
 		}
-		static public function easeOutWith(s:Number):Function
+		static public function easeOutWith(s:Number = 1.70158):Function
 		{
 			return function (k:Number):Number 
 				{
 					return (k = k - 1) * k * ((s + 1) * k + s) + 1;
 				}
 		}
-		static public function easeInOutWith(s:Number):Function
+		static public function easeInOutWith(s:Number = 1.70158):Function
 		{
 			return function (k:Number):Number 
 				{
