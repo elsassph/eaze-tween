@@ -1,5 +1,6 @@
 /*
 	Eaze is an Actionscript 3 tween library by Philippe Elsass
+	Contact: philippe.elsass*gmail.com
 	Website: http://code.google.com/p/eaze-tween/
 	License: http://www.opensource.org/licenses/mit-license.php
 */
