@@ -215,6 +215,8 @@ package aze.motion
 		
 		//--- INSTANCE --------------------------------------------------------
 		
+		static private var id:int = 0;
+		private var _id:int = id++;
 		private var prev:EazeTween;
 		private var next:EazeTween;
 		private var rnext:EazeTween;
@@ -224,6 +226,7 @@ package aze.motion
 		private var reversed:Boolean;
 		private var killTweens:Boolean;
 		private var autoStart:Boolean;
+		private var _configured:Boolean;
 		private var _started:Boolean;
 		private var _inited:Boolean;
 		private var duration:*;
@@ -261,6 +264,7 @@ package aze.motion
 		/// Set tween parameters
 		private function configure(duration:*, newState:Object = null, reversed:Boolean = false):void
 		{
+			_configured = true;
 			this.reversed = reversed;
 			this.duration = duration;
 			
@@ -616,7 +620,7 @@ package aze.motion
 		 */
 		public function to(duration:*, newState:Object = null, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain().to(duration, newState, killTargetTweens);
+			if (_inited || _configured) return chain().to(duration, newState, killTargetTweens);
 			configure(duration, newState);
 			if (autoStart) start(killTargetTweens);
 			return this;
@@ -632,7 +636,7 @@ package aze.motion
 		 */
 		public function from(duration:*, initialState:Object = null, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain().from(duration, initialState, killTargetTweens);
+			if (_inited || _configured) return chain().from(duration, initialState, killTargetTweens);
 			configure(duration, initialState, true);
 			if (autoStart) start(killTargetTweens);
 			return this;
@@ -647,7 +651,7 @@ package aze.motion
 		 */
 		public function play(frame:* = 0, killTargetTweens:Boolean = true):EazeTween
 		{
-			if (_inited) return chain().play(frame, killTargetTweens);
+			if (_inited || _configured) return chain().play(frame, killTargetTweens);
 			configure("auto", { frame:frame });
 			if (autoStart) start(killTargetTweens);
 			return this;

@@ -50,7 +50,16 @@ package
 				.chain(sp3).from(1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp3)
 				.chain(this).apply().onComplete(endOfChain)
-				.to("slow").filter(BlurFilter, { blurX:10, blurY:10, quality:2 });
+				.to("slow").filter(BlurFilter, { blurX:10, blurY:10, quality:2 } );
+			
+			var sp4:Sprite = createItem(0, 100);
+			sp4.name = String(++cpt);
+			eaze(sp4).to(1, {x: 100, y: 200})
+				.onComplete(tweenComplete, sp4)
+				.to(1, {x: 200, y: 300})
+				.onComplete(tweenComplete, sp4)
+				.to(1, {x: 300, y: 400})
+				.onComplete(tweenComplete, sp4);
 		}
 		
 		private function endOfChain():void
@@ -60,7 +69,7 @@ package
 		
 		private function tweenComplete(sp:Sprite):void
 		{
-			trace("Tween complete", sp.name);
+			trace("Tween complete", sp.name, sp.x, sp.y);
 		}
 		
 		private function createItem(sx:int, sy:int):Sprite
