@@ -154,7 +154,7 @@ package aze.motion
 				{
 					isComplete = time >= t.endTime;
 					var k:Number = isComplete ? 1.0 : (time - t.startTime) / t._duration;
-					var ke:Number = t._ease(k);
+					var ke:Number = t._ease(k || 0);
 					var target:Object = t.target;
 					
 					// update
@@ -499,7 +499,7 @@ package aze.motion
 			else 
 			{
 				init()
-				endTime = 1;
+				endTime = _duration = 1;
 				update(0);
 			}
 			return this;
