@@ -54,7 +54,11 @@ package
 			
 			var sp4:Sprite = createItem(0, 100);
 			sp4.name = String(++cpt);
-			eaze(sp4).to(1, {x: 100, y: 200})
+			eaze(sp4).delay(1)
+				.from(1)
+					.filter(BlurFilter, { blurX:20, blurY:20, quality:2 }, true)
+					.updateNow()
+				.to(1, {x: 100, y: 200})
 				.onComplete(tweenComplete, sp4)
 				.to(1, {x: 200, y: 300})
 				.onComplete(tweenComplete, sp4)
