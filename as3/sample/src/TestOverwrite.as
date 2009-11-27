@@ -3,6 +3,7 @@ package
 	import aze.motion.eaze;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
+	import flash.filters.BlurFilter;
 	
 	/**
 	 * NOT overwriting properties test
@@ -38,12 +39,14 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			eaze(e.target).to(1, { alphaVisible:1 }, false);
+			eaze(e.target).to(1, { alphaVisible:1 }, false)
+				.filter(BlurFilter, { blurX:0, blurY:0 }, true);
 		}
 		
 		private function over(e:MouseEvent):void 
 		{
-			eaze(e.target).to(1, { alphaVisible:0 }, false);
+			eaze(e.target).to(1, { alphaVisible:0 }, false)
+				.filter(BlurFilter, { blurX:10, blurY:10 });
 		}
 		
 	}
