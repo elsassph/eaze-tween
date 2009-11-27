@@ -177,6 +177,13 @@ package aze.motion
 								s = s.next;
 							}
 						}
+			
+						if (t._onStart != null)
+						{
+							t._onStart.apply(null, t._onStartArgs);
+							t._onStart = null;
+							t._onStartArgs = null;
+						}
 						
 						if (t._onUpdate != null) 
 							t._onUpdate.apply(null, t._onUpdateArgs);
@@ -309,13 +316,6 @@ package aze.motion
 			_duration = (isNaN(duration) ? smartDuration(String(duration)) : Number(duration)) * 1000;
 			endTime = startTime + _duration;
 			
-			if (_onStart != null)
-			{
-				_onStart.apply(null, _onStartArgs);
-				_onStart = null;
-				_onStartArgs = null;
-			}
-			
 			// set values
 			if (reversed || _duration == 0) update(startTime);
 			if (autoVisible && _duration > 0) target.visible = true;
@@ -439,6 +439,7 @@ package aze.motion
 		{
 			_onStart = handler;
 			_onStartArgs = args;
+			slowTween = !autoVisible || specials != null || _onUpdate != null || _onStart != null;
 			return this;
 		}
 		
@@ -452,7 +453,7 @@ package aze.motion
 		{
 			_onUpdate = handler;
 			_onUpdateArgs = args;
-			slowTween = _onUpdate != null || !autoVisible || specials != null;
+			slowTween = !autoVisible || specials != null || _onUpdate != null || _onStart != null;
 			return this;
 		}
 		
