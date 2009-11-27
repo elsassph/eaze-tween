@@ -42,8 +42,8 @@ package
 			var sp3:Sprite = createItem(cpt * 100, 10);
 			sp3.name = String(++cpt);
 			
-			eaze(this).delay(1)
-				.chain(sp1).from(1, { alpha:0 } ).updateNow()
+			eaze(sp1).onStart(startHandler)
+				.from(1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp1)
 				.chain(sp2).from(1, { alpha:0 } ).updateNow()
 				.onComplete(tweenComplete, sp2)
@@ -64,6 +64,13 @@ package
 				.onComplete(tweenComplete, sp4)
 				.to(1, {x: 300, y: 400})
 				.onComplete(tweenComplete, sp4);
+			
+			trace("tweens defined");
+		}
+		
+		private function startHandler():void
+		{
+			trace("started");
 		}
 		
 		private function endOfChain():void
