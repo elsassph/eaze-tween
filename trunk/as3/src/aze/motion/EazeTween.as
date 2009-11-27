@@ -123,14 +123,6 @@ package aze.motion
 			trace("== check targets=", targets, "tweens=", tweens);
 		}
 		
-		/// Add tween to chain
-		static private function register(tween:EazeTween):void
-		{
-			if (head) head.prev = tween;
-			tween.next = head;
-			head = tween;
-		}
-		
 		/// Enterframe handler for update
 		static private function tick(e:Event):void 
 		{
@@ -197,6 +189,8 @@ package aze.motion
 					complete.unshift(cd);
 					ct++;
 					
+					//trace("- " + t._id + "/" + t.target.name);
+					
 					// finalize
 					t.isDead = true;
 					t.detach();
@@ -215,15 +209,24 @@ package aze.motion
 			}
 			
 			// honor completed tweens notifications & chaining
-			for (var i:int = 0; i < ct; i++) complete[i].execute();
+			if (ct)
+			{
+				for (var i:int = 0; i < ct; i++) complete[i].execute();				
+				
+				//var dump:String = "";
+				//var tt:EazeTween = head;
+				//while (tt) { dump += tt._id + "/" + tt.target.name + " > "; tt = tt.next; }
+				//trace(dump);
+			}
 			
 			tweenCount = cpt;
 		}
 		
 		//--- INSTANCE --------------------------------------------------------
 		
-		static private var id:int = 0;
-		private var _id:int = id++;
+		//static private var id:int = 0;
+		//private var _id:int = id++;
+		
 		private var prev:EazeTween;
 		private var next:EazeTween;
 		private var rnext:EazeTween;
@@ -322,7 +325,6 @@ package aze.motion
 			
 			_started = true;
 			attach(killTweens);
-			register(this);
 		}
 		
 		/// Read target properties
@@ -520,14 +522,35 @@ package aze.motion
 			head = prev;
 		}
 		
-		/// associate target/tween in running Dictionnary
-		private function attach(exclusive:Boolean):void
+		/// push tween in process chain and associate target/tween in running Dictionnary
+		private function attach(killTweens:Boolean):void
 		{
-			if (exclusive) killTweensOf(target);
+			var parallel:EazeTween = null;
 			
-			var tween:EazeTween = running[target];
-			if (tween) rnext = tween;
-			running[target] = this;
+			if (killTweens) killTweensOf(target);
+			else parallel = running[target];
+			
+			if (parallel)
+			{
+				prev = parallel;
+				next = parallel.next;
+				if (next) next.prev = this;
+				parallel.next = this;
+				rnext = parallel;
+			}
+			else
+			{
+				if (head) head.prev = this;
+				next = head;
+				head = this;
+			}
+			
+			//var dump:String = "+ ";
+			//var tt:EazeTween = head;
+			//while (tt) { dump += tt._id + "/" + tt.target.name + " > "; tt = tt.next; }
+			//trace(dump);
+			
+			running[target] = this;			
 		}
 		
 		/// delete target/tween association in running Dictionnary
