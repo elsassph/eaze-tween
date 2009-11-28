@@ -6,7 +6,7 @@ package
 	import flash.filters.BlurFilter;
 	
 	/**
-	 * Tweens chaing test
+	 * Tweens chaining + scale property tween tests
 	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class TestChain extends Sprite
@@ -58,11 +58,11 @@ package
 				.from(1)
 					.filter(BlurFilter, { blurX:20, blurY:20, quality:2 }, true)
 					.updateNow()
-				.to(1, {x: 100, y: 200})
+				.to(1, {x:100, y:200, scale:0.5})
 				.onComplete(tweenComplete, sp4)
-				.to(1, {x: 200, y: 300})
+				.to(1, {x:200, y:300, scale:1.5})
 				.onComplete(tweenComplete, sp4)
-				.to(1, {x: 300, y: 400})
+				.to(1, {x:300, y:400, scale:1})
 				.onComplete(tweenComplete, sp4);
 			
 			trace("tweens defined");
