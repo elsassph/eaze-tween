@@ -30,7 +30,10 @@ package aze.motion
 		static public var defaultDuration:Object = { slow:1, normal:0.4, fast:0.2 };
 		
 		/** Registered plugins */ 
-		static public const specialProperties:Dictionary = new Dictionary(); // see end of this file
+		static public const specialProperties:Dictionary = new Dictionary();
+		specialProperties.alpha = true;
+		specialProperties.alphaVisible = true;
+		specialProperties.scale = true;
 		
 		static private const running:Dictionary = new Dictionary();
 		static private const ticker:Shape = createTicker();
@@ -287,6 +290,11 @@ package aze.motion
 				{
 					if (name == "alpha") autoVisible = true;
 					else if (name == "alphaVisible") { name = "alpha"; autoVisible = false; }
+					else if (name == "scale")
+					{
+						properties = new EazeProperty("scaleX", value, properties);
+						name = "scaleY";
+					}
 					else
 					{
 						specials = new specialProperties[name](target, name, value, specials);
