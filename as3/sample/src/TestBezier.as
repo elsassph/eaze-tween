@@ -10,7 +10,7 @@ package
 	import flash.text.TextFormat;
 	
 	/**
-	 * ...
+	 * Bezier (simple & through) test
 	 * @author Philippe / http://philippe.elsass.me
 	 */
 	public class TestBezier extends Sprite
