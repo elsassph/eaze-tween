@@ -38,7 +38,7 @@ package aze.motion.specials
 		{
 			var current:Number = target[property];
 			
-			fvalue.unshift(current);
+			fvalue = [current].concat(fvalue);
 			if (reverse) fvalue.reverse();
 			
 			var p0:Number, p1:Number, p2:Number = fvalue[0];

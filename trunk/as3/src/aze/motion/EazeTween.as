@@ -292,8 +292,8 @@ package aze.motion
 					else if (name == "alphaVisible") { name = "alpha"; autoVisible = false; }
 					else if (name == "scale")
 					{
-						properties = new EazeProperty("scaleX", value, properties);
-						name = "scaleY";
+						configure(duration, { scaleX:value, scaleY:value }, reversed);
+						continue;
 					}
 					else
 					{
@@ -301,7 +301,7 @@ package aze.motion
 						continue;
 					}
 				}
-				else if (value is Array && target[name] is Number)
+				if (value is Array && target[name] is Number)
 				{
 					if ("__bezier" in specialProperties)
 						specials = new specialProperties["__bezier"](target, name, value, specials);
