@@ -35,6 +35,7 @@
     <option verboseStackTraces="False" />
     <option linkReport="" />
     <option loadExterns="" />
+    <option staticLinkRSL="True" />
     <option additional="" />
     <option customSDK="" />
   </build>

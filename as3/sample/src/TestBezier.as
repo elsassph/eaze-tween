@@ -91,6 +91,8 @@ package
 				eaze(pt).to(2, { 
 						x:[[p1.x, p2.x, p3.x]],
 						y:[[p1.y, p2.y, p3.y]],
+						alpha:[[0.2,0.8,1]],
+						scale:[[2,0.5,1]],
 						tint:0xff9900
 					})
 					.easing(Linear.easeNone)
@@ -101,6 +103,8 @@ package
 				eaze(pt).to(2, { 
 						x:[p1.x, p2.x, p3.x],
 						y:[p1.y, p2.y, p3.y],
+						alpha:[0.2,0.8,1],
+						scale:[2,0.5,1],
 						tint:0xff9900
 					})
 					.easing(Linear.easeNone)
