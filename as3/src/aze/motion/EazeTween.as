@@ -6,7 +6,6 @@
 */
 package aze.motion
 {
-	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quadratic;
 	import aze.motion.specials.EazeSpecial;
 	import flash.display.DisplayObject;
