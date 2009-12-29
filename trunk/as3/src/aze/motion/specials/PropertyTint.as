@@ -1,6 +1,5 @@
 package aze.motion.specials 
 {
-	import aze.motion.easing.Linear;
 	import aze.motion.EazeTween;
 	import flash.display.DisplayObject;
 	import flash.geom.ColorTransform;
