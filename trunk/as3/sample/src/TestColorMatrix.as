@@ -29,7 +29,7 @@ package
 		
 		private function animate(e:Event):void 
 		{
-			eaze(view.mcPict)
+			/*eaze(view.mcPict)
 				.to(1)
 				.filter(ColorMatrixFilter, { 
 					brightness:view.sBrightness.value,
@@ -38,7 +38,11 @@ package
 					hue:view.sHue.value,
 					tint:parseInt("0x" + view.txtRGB.text),
 					colorize:view.sColorize.value
-				});
+				});*/
+			eaze(view.mcPict)
+				.to(1)
+				.colorMatrix(view.sBrightness.value, view.sContrast.value, view.sSaturation.value,
+					view.sHue.value, parseInt("0x" + view.txtRGB.text), view.sColorize.value);
 		}
 		
 	}
