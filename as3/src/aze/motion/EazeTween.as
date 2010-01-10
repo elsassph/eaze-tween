@@ -11,6 +11,7 @@ package aze.motion
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.events.Event;
+	import flash.filters.ColorMatrixFilter;
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
@@ -394,8 +395,8 @@ package aze.motion
 		/**
 		 * Add a colorTransform tween (PropertyTint must be activated)
 		 * @param	tint		Color
-		 * @param	colorize	Color offset ratio (0-1)
-		 * @param	multiply	Existing color ratio (0-1+)
+		 * @param	colorize	Color offset ratio (0..1)
+		 * @param	multiply	Existing color ratio (0..1+)
 		 * @return	Tween reference
 		 */
 		public function tint(tint:uint, colorize:Number = 1, multiply:Number = NaN):EazeTween
@@ -403,6 +404,26 @@ package aze.motion
 			if (isNaN(multiply)) multiply = 1 - colorize;
 			addSpecial("tint", "tint", [tint, colorize, multiply]);
 			return this;
+		}
+		
+		/**
+		 * Add a ColorMatrix filter tween (PropertyColorMatrix must be activated)
+		 * @param	brightness	Brightness ratio (-1..1)
+		 * @param	contrast	Contrast ratio (-1..1)
+		 * @param	saturation	Saturation ratio (-1..1)
+		 * @param	hue			Rotation angle (-180..180)
+		 * @param	tint		Color
+		 * @param	colorize	Colorization ratio (0..1)
+		 * @return	Tween reference
+		 */
+		public function colorMatrix(brightness:Number = 0, contrast:Number = 0, saturation:Number = 0,
+			hue:Number = 0, tint:uint = 0xffffff, colorize:Number = 0):EazeTween
+		{
+			var remove:Boolean = !brightness && !contrast && !saturation && !hue && !colorize;
+			return filter(ColorMatrixFilter, { 
+				brightness:brightness, contrast:contrast, saturation:saturation,
+				hue:hue, tint:tint, colorize:colorize
+			}, remove);
 		}
 		
 		/**
