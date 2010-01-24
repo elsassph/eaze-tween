@@ -237,7 +237,7 @@ package aze.motion
 		
 		private var target:Object;
 		private var reversed:Boolean;
-		private var killTweens:Boolean;
+		private var overwrite:Boolean;
 		private var autoStart:Boolean;
 		private var _configured:Boolean;
 		private var _started:Boolean;
@@ -290,15 +290,18 @@ package aze.motion
 				{
 					if (name == "alpha") autoVisible = true;
 					else if (name == "alphaVisible") { name = "alpha"; autoVisible = false; }
-					else if (name == "scale")
+					else if (!(name in target))
 					{
-						configure(duration, { scaleX:value, scaleY:value }, reversed);
-						continue;
-					}
-					else
-					{
-						specials = new specialProperties[name](target, name, value, specials);
-						continue;
+						if (name == "scale")
+						{
+							configure(duration, { scaleX:value, scaleY:value }, reversed);
+							continue;
+						}
+						else
+						{
+							specials = new specialProperties[name](target, name, value, specials);
+							continue;
+						}
 					}
 				}
 				if (value is Array && target[name] is Number)
@@ -320,7 +323,7 @@ package aze.motion
 		{
 			if (_started) return;
 			if (!_inited) init();
-			killTweens = killTargetTweens;
+			overwrite = killTargetTweens;
 			
 			// add to main tween chain
 			startTime = getTimer() + timeOffset;
@@ -332,7 +335,7 @@ package aze.motion
 			if (autoVisible && _duration > 0) target.visible = true;
 			
 			_started = true;
-			attach(killTweens);
+			attach(overwrite);
 		}
 		
 		/// Read target properties
@@ -394,12 +397,12 @@ package aze.motion
 		
 		/**
 		 * Add a colorTransform tween (PropertyTint must be activated)
-		 * @param	tint		Color
-		 * @param	colorize	Color offset ratio (0..1)
+		 * @param	tint		Color value or null (remove tint)
+		 * @param	colorize	Colorization offset ratio (0..1)
 		 * @param	multiply	Existing color ratio (0..1+)
 		 * @return	Tween reference
 		 */
-		public function tint(tint:uint, colorize:Number = 1, multiply:Number = NaN):EazeTween
+		public function tint(tint:* = null, colorize:Number = 1, multiply:Number = NaN):EazeTween
 		{
 			if (isNaN(multiply)) multiply = 1 - colorize;
 			addSpecial("tint", "tint", [tint, colorize, multiply]);
@@ -412,7 +415,7 @@ package aze.motion
 		 * @param	contrast	Contrast ratio (-1..1)
 		 * @param	saturation	Saturation ratio (-1..1)
 		 * @param	hue			Rotation angle (-180..180)
-		 * @param	tint		Color
+		 * @param	tint		Color value
 		 * @param	colorize	Colorization ratio (0..1)
 		 * @return	Tween reference
 		 */
@@ -522,6 +525,16 @@ package aze.motion
 		}
 		
 		/**
+		 * Stop immediately all tweens associated with target
+		 * @return Tween reference
+		 */
+		public function killTweens():EazeTween
+		{
+			EazeTween.killTweensOf(target);
+			return this;
+		}
+		
+		/**
 		 * Update tween values immediately
 		 */
 		public function updateNow():EazeTween
@@ -551,11 +564,11 @@ package aze.motion
 		}
 		
 		/// push tween in process chain and associate target/tween in running Dictionnary
-		private function attach(killTweens:Boolean):void
+		private function attach(overwrite:Boolean):void
 		{
 			var parallel:EazeTween = null;
 			
-			if (killTweens) killTweensOf(target);
+			if (overwrite) killTweensOf(target);
 			else parallel = running[target];
 			
 			if (parallel)

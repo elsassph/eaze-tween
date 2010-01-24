@@ -29,16 +29,17 @@ package aze.motion.specials
 			{
 				var mix:Number = 1;
 				var amix:Number = 0;
-				var color:uint;
-				if (value is Array) 
+				var color:uint = 0;
+				
+				var a:Array = (value is Array) ? value : [value];
+				if (a[0] === null) { mix = 0; amix = 1; } // remove tint
+				else 
 				{
-					var a:Array = value as Array;
 					if (a.length > 1) mix = a[1];
 					if (a.length > 2) amix = a[2];
 					else amix = 1 - mix;
 					color = a[0];
 				}
-				else color = value;
 				
 				tvalue = new ColorTransform();
 				tvalue.redMultiplier = amix;
