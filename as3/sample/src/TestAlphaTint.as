@@ -38,7 +38,7 @@ package
 		
 		private function out(e:MouseEvent):void 
 		{
-			eaze(e.target).to(1, { tint:null } );
+			eaze(e.target).to(1).tint();
 		}
 		
 		private function over(e:MouseEvent):void 
@@ -50,7 +50,7 @@ package
 			
 			// idem, smart syntax
 			//eaze(e.target).to(1).tint(0xffffff); 
-			eaze(e.target).to(1).tint(0xffffff, 0.5); 
+			eaze(e.target).to(1).tint(0xffffff, 0.8); 
 			//eaze(e.target).to(1).tint(0, 0, 1.5); 
 			//eaze(e.target).to(1).tint(0, 0, 0.5); 
 		}
