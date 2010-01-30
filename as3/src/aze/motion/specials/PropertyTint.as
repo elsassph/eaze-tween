@@ -22,7 +22,6 @@ package aze.motion.specials
 		function PropertyTint(target:Object, property:*, value:*, next:EazeSpecial)
 		{
 			super(target, property, value, next);
-			var disp:DisplayObject = DisplayObject(target);
 			
 			if (value === null) tvalue = new ColorTransform();
 			else 
@@ -53,10 +52,8 @@ package aze.motion.specials
 		
 		override public function init(reverse:Boolean):void 
 		{
-			var disp:DisplayObject = DisplayObject(target);
-			
-			if (reverse) { start = tvalue; tvalue = disp.transform.colorTransform; }
-			else { start = disp.transform.colorTransform; }
+			if (reverse) { start = tvalue; tvalue = target.transform.colorTransform; }
+			else { start = target.transform.colorTransform; }
 			
 			delta = new ColorTransform(
 				tvalue.redMultiplier - start.redMultiplier,
@@ -74,8 +71,7 @@ package aze.motion.specials
 		
 		override public function update(ke:Number, isComplete:Boolean):void
 		{
-			var disp:DisplayObject = DisplayObject(target);
-			var t:ColorTransform = disp.transform.colorTransform;
+			var t:ColorTransform = target.transform.colorTransform;
 			
 			t.redMultiplier = start.redMultiplier + delta.redMultiplier * ke;
 			t.greenMultiplier = start.greenMultiplier + delta.greenMultiplier * ke;
@@ -84,7 +80,7 @@ package aze.motion.specials
 			t.greenOffset = start.greenOffset + delta.greenOffset * ke;
 			t.blueOffset = start.blueOffset + delta.blueOffset * ke;
 			
-			disp.transform.colorTransform = t;
+			target.transform.colorTransform = t;
 		}
 		
 		override public function dispose():void
