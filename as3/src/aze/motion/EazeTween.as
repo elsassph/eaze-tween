@@ -110,13 +110,12 @@ package aze.motion
 			return sp;
 		}
 		
-		static private function checkLeaks():void
+		/*static private function checkLeaks():void
 		{
 			var targets:int = 0;
 			var t:EazeTween;
 			for (var target:Object in running)
 			{
-				//trace(target);
 				targets++;
 			}
 			
@@ -124,18 +123,21 @@ package aze.motion
 			t = head;
 			while (t) { tweens++; t = t.next; }
 			trace("== check targets=", targets, "tweens=", tweens);
-		}
+		}*/
 		
 		/// Enterframe handler for update
 		static private function tick(e:Event):void 
 		{
-			if (head) updateTweens(getTimer());
+			if (head) 
+			{
+				updateTweens(getTimer());
+			}
 		}
 		
 		/// Main update loop
 		static private function updateTweens(time:int):void 
 		{
-			var complete:Array = [];
+			var complete:/*CompleteData*/Array = [];
 			var ct:int = 0;
 			var t:EazeTween = head;
 			var cpt:int = 0;
@@ -187,12 +189,14 @@ package aze.motion
 				
 				if (isComplete) // tween ends
 				{
-					var cd:CompleteData = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain, t.endTime - time);
-					t._chain = null;
-					complete.unshift(cd);
-					ct++;
-					
-					//trace("- " + t._id + "/" + t.target.name);
+					if (t._started)
+					{
+						var cd:CompleteData = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain, t.endTime - time);
+						cd.id = t._id;
+						t._chain = null;
+						complete.unshift(cd);
+						ct++;
+					}
 					
 					// finalize
 					t.isDead = true;
@@ -214,12 +218,8 @@ package aze.motion
 			// honor completed tweens notifications & chaining
 			if (ct)
 			{
-				for (var i:int = 0; i < ct; i++) complete[i].execute();				
-				
-				//var dump:String = "";
-				//var tt:EazeTween = head;
-				//while (tt) { dump += tt._id + "/" + tt.target.name + " > "; tt = tt.next; }
-				//trace(dump);
+				for (var i:int = 0; i < ct; i++)
+					complete[i].execute();
 			}
 			
 			tweenCount = cpt;
@@ -227,8 +227,8 @@ package aze.motion
 		
 		//--- INSTANCE --------------------------------------------------------
 		
-		//static private var id:int = 0;
-		//private var _id:int = id++;
+		static private var id:int = 0;
+		private var _id:int = id++;
 		
 		private var prev:EazeTween;
 		private var next:EazeTween;
@@ -333,7 +333,6 @@ package aze.motion
 			// set values
 			if (reversed || _duration == 0) update(startTime);
 			if (autoVisible && _duration > 0) target.visible = true;
-			
 			_started = true;
 			attach(overwrite);
 		}
@@ -557,10 +556,10 @@ package aze.motion
 		private function update(time:Number):void
 		{
 			// make this tween the only tween to update 
-			var prev:EazeTween = head;
+			var h:EazeTween = head;
 			head = this;
 			updateTweens(time);
-			head = prev;
+			head = h;
 		}
 		
 		/// push tween in process chain and associate target/tween in running Dictionnary
@@ -585,11 +584,6 @@ package aze.motion
 				next = head;
 				head = this;
 			}
-			
-			//var dump:String = "+ ";
-			//var tt:EazeTween = head;
-			//while (tt) { dump += tt._id + "/" + tt.target.name + " > "; tt = tt.next; }
-			//trace(dump);
 			
 			running[target] = this;			
 		}
@@ -627,18 +621,21 @@ package aze.motion
 		/// Cleanup all references except main chaining
 		private function dispose():void
 		{
-			if (_started) target = null;
+			if (_started) 
+			{
+				target = null;
+				_onComplete = null;
+				_onCompleteArgs = null;
+				if (_chain)
+				{
+					for each(var tween:EazeTween in _chain) tween.dispose();
+					_chain = null;
+				}
+			}
 			if (properties) { properties.dispose(); properties = null; }
 			_ease = null;
 			_onStart = null;
 			_onStartArgs = null;
-			_onComplete = null;
-			_onCompleteArgs = null;
-			if (_chain)
-			{
-				for each(var tween:EazeTween in _chain) tween.dispose();
-				_chain = null;
-			}
 			if (slowTween)
 			{
 				if (specials) { specials.dispose(); specials = null; }
@@ -653,26 +650,32 @@ package aze.motion
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @return Tween object
 		 */
-		public function delay(duration:*, killTargetTweens:Boolean = true):EazeTween
+		public function delay(duration:*, overwrite:Boolean = true):EazeTween
 		{
-			if (_inited) return chain().delay(duration, killTargetTweens);
-			configure(duration);
-			if (autoStart) start(killTargetTweens);
-			return this;
+			return add(duration, null, overwrite);
 		}
 		
 		/**
 		 * Immediately change target properties
 		 * @param	target
 		 * @param	newState
-		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
+		 * @param	overwrite	(default: true) Kill existing tweens of target
 		 */
-		public function apply(newState:Object = null, killTargetTweens:Boolean = true):EazeTween
+		public function apply(newState:Object = null, overwrite:Boolean = true):EazeTween
 		{
-			if (_inited) return chain().apply(newState, killTargetTweens);
-			configure(0, newState);
-			if (autoStart) start(killTargetTweens);
-			return this;
+			return add(0, newState, overwrite);
+		}
+		
+		/**
+		 * Play target MovieClip timeline
+		 * @param	target
+		 * @param	frame		Frame number or label (default: totalFrames)
+		 * @param	overwrite	(default: true) Kill existing tweens of target
+		 * @return	Tween object
+		 */
+		public function play(frame:* = 0, overwrite:Boolean = true):EazeTween
+		{
+			return add("auto", { frame:frame }, overwrite);
 		}
 		
 		/**
@@ -680,15 +683,12 @@ package aze.motion
 		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
-		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
+		 * @param	overwrite	(default: true) Kill existing tweens of target
 		 * @return Tween object
 		 */
-		public function to(duration:*, newState:Object = null, killTargetTweens:Boolean = true):EazeTween
+		public function to(duration:*, newState:Object = null, overwrite:Boolean = true):EazeTween
 		{
-			if (_inited || _configured) return chain().to(duration, newState, killTargetTweens);
-			configure(duration, newState);
-			if (autoStart) start(killTargetTweens);
-			return this;
+			return add(duration, newState, overwrite);
 		}
 		
 		/**
@@ -696,29 +696,21 @@ package aze.motion
 		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
 		 * @param	newState
-		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
+		 * @param	overwrite	(default: true) Kill existing tweens of target
 		 * @return Tween object
 		 */
-		public function from(duration:*, initialState:Object = null, killTargetTweens:Boolean = true):EazeTween
+		public function from(duration:*, fromState:Object = null, overwrite:Boolean = true):EazeTween
 		{
-			if (_inited || _configured) return chain().from(duration, initialState, killTargetTweens);
-			configure(duration, initialState, true);
-			if (autoStart) start(killTargetTweens);
-			return this;
+			return add(duration, fromState, overwrite, true);
 		}
 		
-		/**
-		 * Play target MovieClip timeline
-		 * @param	target
-		 * @param	frame		Frame number or label (default: totalFrames)
-		 * @param	overwrite	"keep" or "overwrite" (default) existing tweens of target
-		 * @return	Tween object
-		 */
-		public function play(frame:* = 0, killTargetTweens:Boolean = true):EazeTween
+		/// Create or chain a new tween
+		private function add(duration:*, state:Object, overwrite:Boolean, reversed:Boolean = false):EazeTween
 		{
-			if (_inited || _configured) return chain().play(frame, killTargetTweens);
-			configure("auto", { frame:frame });
-			if (autoStart) start(killTargetTweens);
+			if (isDead) return new EazeTween(target).add(duration, state, overwrite, reversed);
+			if (_configured) return chain().add(duration, state, overwrite, reversed);
+			configure(duration, state, reversed);
+			if (autoStart) start(overwrite);
 			return this;
 		}
 		
@@ -783,6 +775,7 @@ import aze.motion.EazeTween;
  */
 final class CompleteData
 {
+	public var id:int;
 	private var callback:Function;
 	private var args:Array;
 	private var chain:Array;
