@@ -19,7 +19,10 @@ package
 			
 			hello("before");
 			
-			eaze(this) // apply/delay/0 tween stability test
+			// apply/delay/0 tween stability test
+			eaze(this) 
+				.onUpdate(updateHandler)
+				.delay(0.1)
 				.apply({ foo:1 })
 				.to(0, { foo:2 })
 				.delay(0)
@@ -27,6 +30,11 @@ package
 				.delay(0)
 				.apply({ foo:4 })
 				.onComplete(hello, "after");
+		}
+		
+		private function updateHandler():void
+		{
+			trace("update handler defined before tween");
 		}
 		
 		private function tick(e:Event):void 

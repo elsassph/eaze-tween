@@ -288,7 +288,7 @@ package aze.motion
 				var value:* = newState[name];
 				if (name in specialProperties)
 				{
-					if (name == "alpha") autoVisible = true;
+					if (name == "alpha") { autoVisible = true; slowTween = true; }
 					else if (name == "alphaVisible") { name = "alpha"; autoVisible = false; }
 					else if (!(name in target))
 					{
@@ -300,6 +300,7 @@ package aze.motion
 						else
 						{
 							specials = new specialProperties[name](target, name, value, specials);
+							slowTween = true;
 							continue;
 						}
 					}
@@ -312,8 +313,6 @@ package aze.motion
 				}
 				properties = new EazeProperty(name, value, properties);
 			}
-			
-			slowTween = autoVisible || specials != null;
 		}
 		
 		/** 
