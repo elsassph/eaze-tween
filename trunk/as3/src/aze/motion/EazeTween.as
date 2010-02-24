@@ -308,7 +308,10 @@ package aze.motion
 				if (value is Array && target[name] is Number)
 				{
 					if ("__bezier" in specialProperties)
+					{
 						specials = new specialProperties["__bezier"](target, name, value, specials);
+						slowTween = true;
+					}
 					continue;
 				}
 				properties = new EazeProperty(name, value, properties);
