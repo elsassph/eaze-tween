@@ -192,7 +192,6 @@ package aze.motion
 					if (t._started)
 					{
 						var cd:CompleteData = new CompleteData(t._onComplete, t._onCompleteArgs, t._chain, t.endTime - time);
-						cd.id = t._id;
 						t._chain = null;
 						complete.unshift(cd);
 						ct++;
@@ -227,8 +226,8 @@ package aze.motion
 		
 		//--- INSTANCE --------------------------------------------------------
 		
-		static private var id:int = 0;
-		private var _id:int = id++;
+		//static private var id:int = 0;
+		//private var _id:int = id++;
 		
 		private var prev:EazeTween;
 		private var next:EazeTween;
@@ -777,7 +776,6 @@ import aze.motion.EazeTween;
  */
 final class CompleteData
 {
-	public var id:int;
 	private var callback:Function;
 	private var args:Array;
 	private var chain:Array;
