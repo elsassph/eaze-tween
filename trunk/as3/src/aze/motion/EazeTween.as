@@ -731,7 +731,7 @@ package aze.motion
 		public function get isStarted():Boolean { return _started; }
 		
 		/** Tween is finished */
-		public function get isFinished():Boolean { return !isDead; }
+		public function get isFinished():Boolean { return isDead; }
 	}
 
 }
