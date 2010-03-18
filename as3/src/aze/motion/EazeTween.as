@@ -726,7 +726,12 @@ package aze.motion
 			_chain.push(tween);
 			return tween;
 		}
-
+		
+		/** Tween is running */
+		public function get isStarted():Boolean { return _started; }
+		
+		/** Tween is finished */
+		public function get isFinished():Boolean { return !isDead; }
 	}
 
 }
