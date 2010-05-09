@@ -447,7 +447,7 @@ package aze.motion
 		{
 			if (special in specialProperties && target)
 			{
-				if (!_inited && autoStart)
+				if ((!_inited || _duration == 0) && autoStart)
 				{
 					// apply
 					EazeSpecial(new specialProperties[special](target, name, value, null))
