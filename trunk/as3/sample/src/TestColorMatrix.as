@@ -25,6 +25,10 @@ package
 			view.sSaturation.addEventListener(Event.CHANGE, animate);
 			view.sHue.addEventListener(Event.CHANGE, animate);
 			view.sColorize.addEventListener(Event.CHANGE, animate);
+			
+			eaze(view).to(0).colorMatrix( -1)
+				.delay(1)
+				.delay(0).colorMatrix();
 		}
 		
 		private function animate(e:Event):void 
