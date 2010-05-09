@@ -106,24 +106,8 @@ package aze.motion
 		{
 			var sp:Shape = new Shape();
 			sp.addEventListener(Event.ENTER_FRAME, tick);
-			//setInterval(checkLeaks, 5000);
 			return sp;
 		}
-		
-		/*static private function checkLeaks():void
-		{
-			var targets:int = 0;
-			var t:EazeTween;
-			for (var target:Object in running)
-			{
-				targets++;
-			}
-			
-			var tweens:int = 0.
-			t = head;
-			while (t) { tweens++; t = t.next; }
-			trace("== check targets=", targets, "tweens=", tweens);
-		}*/
 		
 		/// Enterframe handler for update
 		static private function tick(e:Event):void 
