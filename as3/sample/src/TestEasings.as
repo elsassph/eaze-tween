@@ -1,6 +1,7 @@
 ﻿package  
 {
 	import aze.motion.easing.Back;
+	import aze.motion.easing.Bounce;
 	import aze.motion.easing.Cubic;
 	import aze.motion.easing.Elastic;
 	import aze.motion.easing.Expo;
@@ -45,12 +46,16 @@
 			test("Back.easeIn", Back.easeIn);
 			test("Back.easeOut", Back.easeOut);
 			test("Back.easeInOut", Back.easeInOut);
+			newLine();
+			test("Bounce.easeIn", Bounce.easeIn);
+			test("Bounce.easeOut", Bounce.easeOut);
+			test("Bounce.easeInOut", Bounce.easeInOut);
 		}
 		
 		private function newLine():void
 		{
 			cx = 10;
-			cy += 80;
+			cy += 70;
 		}
 		
 		private function test(name:String, easing:Function):void
@@ -63,12 +68,12 @@
 			addChild(t);
 			
 			graphics.lineStyle(1, 0x999999);
-			graphics.drawRect(cx, cy + 20, 200, 50);
-			graphics.moveTo(cx, cy + 70);
+			graphics.drawRect(cx, cy + 15, 200, 50);
+			graphics.moveTo(cx, cy + 65);
 			graphics.lineStyle(1, 0xff9933);
 			for (var i:int = 0; i <= STEPS; i++) 
 			{
-				graphics.lineTo(cx + 200 * i / STEPS, cy + 70 - easing(i / STEPS) * 50);
+				graphics.lineTo(cx + 200 * i / STEPS, cy + 60 - easing(i / STEPS) * 45);
 			}
 			cx += 250;
 		}
