@@ -16,6 +16,7 @@ package aze.motion
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
 	import flash.utils.setInterval;
+	import gs.easing.Linear;
 	
 	/**
 	 * EazeTween tween object
@@ -660,7 +661,7 @@ package aze.motion
 		 */
 		public function play(frame:* = 0, overwrite:Boolean = true):EazeTween
 		{
-			return add("auto", { frame:frame }, overwrite);
+			return add("auto", { frame:frame }, overwrite).easing(Linear.easeNone);
 		}
 		
 		/**
