@@ -6,17 +6,14 @@
 */
 package aze.motion
 {
+	import aze.motion.easing.Linear;
 	import aze.motion.easing.Quadratic;
 	import aze.motion.specials.EazeSpecial;
-	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.filters.ColorMatrixFilter;
 	import flash.utils.Dictionary;
-	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
-	import flash.utils.setInterval;
-	import gs.easing.Linear;
 	
 	/**
 	 * EazeTween tween object
