@@ -1,6 +1,9 @@
 <project name="EazeTweenDoc" default="build">
 
-	<property name="FLEX_HOME" location="C:/Tools/flexsdk_4.0"/>
+	<property environment="env" />
+	<fail unless="env.FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
+	<property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+	
 	<property name="OUTPUT" location="lib/EazeTween.swc"/>
 
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
