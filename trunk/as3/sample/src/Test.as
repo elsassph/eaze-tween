@@ -15,6 +15,8 @@ package
 	import flash.text.TextFormat;
 	import net.hires.debug.Stats;
 	
+	[SWF(width = "998", height = "284", frameRate = "30", backgroundColor = "#FFFFFF")]
+	
 	/**
 	 * Performance test
 	 * @author Philippe / http://philippe.elsass.me
@@ -33,6 +35,12 @@ package
 		public function Test() 
 		{
 			EazeTween.defaultEasing = Quart.easeIn;
+			
+			var longtext:String = "";
+			for (var j:int = 0; j < 50000; j++) 
+			{
+				longtext += "abcd ";
+			}
 			
 			cx = stage.stageWidth / 2;
 			cy = stage.stageHeight / 2;

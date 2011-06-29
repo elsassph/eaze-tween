@@ -12,6 +12,7 @@ package aze.motion
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.filters.ColorMatrixFilter;
+	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
@@ -50,7 +51,7 @@ package aze.motion
 		
 		/**
 		 * Stop immediately all tweens associated with target
-		 * @param	target
+		 * @param	target		Target object
 		 */
 		static public function killTweensOf(target:Object):void
 		{
@@ -243,7 +244,7 @@ package aze.motion
 		
 		/**
 		 * Creates a tween instance
-		 * @param	target
+		 * @param	target		Target object
 		 * @param	autoStart	Start tween immediately after .to / .from are called
 		 */
 		public function EazeTween(target:Object, autoStart:Boolean = true)
@@ -354,7 +355,7 @@ package aze.motion
 		
 		/**
 		 * Set easing method
-		 * @param	f Easing function(k:Number):Number
+		 * @param	f	Easing function(k:Number):Number
 		 * @return	Tween reference
 		 */
 		public function easing(f:Function):EazeTween
@@ -366,7 +367,7 @@ package aze.motion
 		/**
 		 * Add a filter animation (PropertyFilter must be activated)
 		 * @param	classRef	Filter class (ex: BlurFilter or "blurFilter")
-		 * @param	parameters
+		 * @param	parameters	Filter properties (ex: { blurX:10, blurY:10 })
 		 * @return	Tween reference
 		 */
 		public function filter(classRef:*, parameters:Object, removeWhenDone:Boolean = false):EazeTween
@@ -413,14 +414,26 @@ package aze.motion
 		
 		/**
 		 * Add a short-rotation tween (PropertyShortRotation must be activated)
-		 * @param	name	Target member name (ie. "rotation")
 		 * @param	value	Rotation value
-		 * @param	useRadian	Use radians instead of degrees
+		 * @param	name	Target member name (defaults to "rotation")
+		 * @param	useRadian	Use radians instead of degrees (default)
 		 * @return	Tween reference
 		 */
-		public function short(name:String, value:Number, useRadian:Boolean = false):EazeTween
+		public function short(value:Number, name:String = "rotation", useRadian:Boolean = false):EazeTween
 		{
 			addSpecial("__short", name, [value, useRadian]);
+			return this;
+		}
+		
+		/**
+		 * Add a scrollRect tween (PropertyScrollRect must be activated)
+		 * @param	value	Rectangle value
+		 * @param	name	Target member name (defaults to "scrollRect")
+		 * @return	Tween reference
+		 */
+		public function rect(value:Rectangle, name:String = "scrollRect"):EazeTween
+		{
+			addSpecial("__rect", name, value);
 			return this;
 		}
 		
@@ -640,8 +653,7 @@ package aze.motion
 		
 		/**
 		 * Immediately change target properties
-		 * @param	target
-		 * @param	newState
+		 * @param	newState	Properties to animate
 		 * @param	overwrite	(default: true) Kill existing tweens of target
 		 */
 		public function apply(newState:Object = null, overwrite:Boolean = true):EazeTween
@@ -651,7 +663,6 @@ package aze.motion
 		
 		/**
 		 * Play target MovieClip timeline
-		 * @param	target
 		 * @param	frame		Frame number or label (default: totalFrames)
 		 * @param	overwrite	(default: true) Kill existing tweens of target
 		 * @return	Tween object
@@ -663,9 +674,8 @@ package aze.motion
 		
 		/**
 		 * Animate target from current state to provided new state
-		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
-		 * @param	newState
+		 * @param	newState	Properties to animate
 		 * @param	overwrite	(default: true) Kill existing tweens of target
 		 * @return Tween object
 		 */
@@ -676,9 +686,8 @@ package aze.motion
 		
 		/**
 		 * Animate target from provided new state to current state
-		 * @param	target
 		 * @param	duration	Seconds or "slow/normal/fast/auto"
-		 * @param	newState
+		 * @param	newState	Properties to animate
 		 * @param	overwrite	(default: true) Kill existing tweens of target
 		 * @return Tween object
 		 */
