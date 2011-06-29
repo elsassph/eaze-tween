@@ -1,15 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project>
+<project version="2">
   <!-- Output SWF options -->
   <output>
-    <movie disabled="False" />
+    <movie outputType="Application" />
     <movie input="" />
     <movie path="bin\EazeDemo.swf" />
     <movie fps="250" />
     <movie width="800" />
     <movie height="500" />
     <movie version="10" />
+    <movie minorVersion="0" />
+    <movie platform="Flash Player" />
     <movie background="#333333" />
+    <movie preferredSDK="Flex 4.1, AIR 2.0.2;4.1.0, 2.0.2;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -25,8 +28,10 @@
     <option locale="" />
     <option loadConfig="" />
     <option optimize="True" />
+    <option omitTraces="True" />
     <option showActionScriptWarnings="True" />
     <option showBindingWarnings="True" />
+    <option showInvalidCSS="True" />
     <option showDeprecationWarnings="True" />
     <option showUnusedTypeSelectorWarnings="True" />
     <option strict="True" />
@@ -34,12 +39,12 @@
     <option useResourceBundleMetadata="True" />
     <option warnings="True" />
     <option verboseStackTraces="False" />
-    <option linkReport="" />
+    <option linkReport="obj\report.xml" />
     <option loadExterns="" />
     <option staticLinkRSL="True" />
     <option additional="" />
     <option compilerConstants="" />
-    <option customSDK="" />
+    <option minorVersion="" />
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
@@ -82,4 +87,6 @@
     <option showHiddenPaths="False" />
     <option testMovie="Default" />
   </options>
+  <!-- Plugin storage -->
+  <storage />
 </project>

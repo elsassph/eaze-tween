@@ -24,3 +24,4 @@ import aze.motion.specials.PropertyVolume; PropertyVolume.register();
 import aze.motion.specials.PropertyColorMatrix; PropertyColorMatrix.register();
 import aze.motion.specials.PropertyBezier; PropertyBezier.register();
 import aze.motion.specials.PropertyShortRotation; PropertyShortRotation.register();
+import aze.motion.specials.PropertyRect; PropertyRect.register();
