@@ -37,6 +37,7 @@ package aze.motion.specials
 				tmpRect = original;
 				original = targetRect;
 				targetRect = tmpRect;
+				target.scrollRect = original;
 			}
 			tmpRect = new Rectangle();
 		}
