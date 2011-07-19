@@ -15,7 +15,7 @@ package
 	import flash.text.TextFormat;
 	import net.hires.debug.Stats;
 	
-	[SWF(width = "998", height = "284", frameRate = "30", backgroundColor = "#FFFFFF")]
+	[SWF(width = "800", height = "600", frameRate = "30", backgroundColor = "#FFFFFF")]
 	
 	/**
 	 * Performance test
